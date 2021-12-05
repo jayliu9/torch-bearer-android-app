@@ -116,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        passwordResetDialog.show();
+        passwordResetDialog.create().show();
 
     }
 
