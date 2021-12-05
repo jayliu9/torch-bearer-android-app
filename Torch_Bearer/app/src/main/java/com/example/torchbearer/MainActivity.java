@@ -20,14 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText userName;
-    private EditText email;
-    private EditText phone;
-    private EditText password;
-    private Button registerBtn;
-    private TextView loginBtn;
-    private FirebaseAuth firebaseAuth;
-    private ProgressBar progressBar;
+    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,16 +29,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void register(View view) {
-        userName = findViewById(R.id.username);
-        email = findViewById(R.id.email);
-        phone = findViewById(R.id.phone);
-        password = findViewById(R.id.password);
-        registerBtn = findViewById(R.id.registerBtn);
-        loginBtn = findViewById(R.id.createTxt);
+        EditText email = findViewById(R.id.email);
+        EditText password = findViewById(R.id.password);
 
-        progressBar = findViewById(R.id.progressBar);
-
-        firebaseAuth = FirebaseAuth.getInstance();
+        ProgressBar progressBar = findViewById(R.id.progressBar);
 
 
         if (firebaseAuth.getCurrentUser() != null) {
