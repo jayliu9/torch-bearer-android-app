@@ -1,4 +1,4 @@
-package com.example.torchbearer;
+package com.example.torchbearer.achievement;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,6 +7,9 @@ import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.example.torchbearer.R;
+import com.example.torchbearer.achievement.achievable.AchievableFragment;
+import com.example.torchbearer.achievement.achieved.AchievedFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 

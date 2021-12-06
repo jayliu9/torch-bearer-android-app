@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TorchBearer">
         <activity
-            android:name=".AchievementActivity"
+            android:name=".achievement.AchievementActivity"
             android:exported="false" />
         <activity
             android:name=".ProfileActivity"
