@@ -3,6 +3,7 @@ package com.example.torchbearer;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
@@ -114,16 +115,23 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         LatLng seattle = new LatLng(47, -122);
         myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker"));
+//        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+//                PackageManager.PERMISSION_GRANTED &&
+//                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
+//                        PackageManager.PERMISSION_GRANTED) {
+//            map.setMyLocationEnabled(true);
+//            map.getUiSettings().setMyLocationButtonEnabled(true);
+//        }
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setAllGesturesEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLng(seattle));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(seattle, 15.0f));
     }
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
         if (location != null) {
             saveLocation(location);
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15.0f));
+            map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
         } else {
             Toast.makeText(this, "No location", Toast.LENGTH_SHORT).show();
         }
