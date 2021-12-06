@@ -7,25 +7,38 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.List;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
@@ -33,8 +46,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private DatabaseReference reference;
     private LocationManager manager;
+    private Polyline gpsTrack;
 
-    private final int MIN_TIME = 1000;
+    private final int MIN_TIME = 500;
     private final int MIN_DISTANCE = 1;
 
     Marker myMaker;
@@ -48,7 +62,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
         getLocationUpdate();
 
         readChanges();
@@ -114,7 +127,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         map = googleMap;
 
         LatLng seattle = new LatLng(47, -122);
-        myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker"));
+        myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker")
+                .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
 //        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
 //                PackageManager.PERMISSION_GRANTED &&
 //                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
@@ -125,12 +139,27 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setAllGesturesEnabled(true);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(seattle, 15.0f));
+
+        PolylineOptions polylineOptions = new PolylineOptions();
+        polylineOptions.color(Color.RED);
+        polylineOptions.width(4);
+        gpsTrack = map.addPolyline(polylineOptions);
+    }
+
+    private BitmapDescriptor BitMapFromVector(Context applicationContext, int ic_torch) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(applicationContext, ic_torch);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
         if (location != null) {
             saveLocation(location);
+            updateTrack(location);
             map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
         } else {
             Toast.makeText(this, "No location", Toast.LENGTH_SHORT).show();
@@ -140,5 +169,11 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void saveLocation(Location location) {
         reference.setValue(location);
+    }
+
+    private void updateTrack(Location location) {
+        List<LatLng> points = gpsTrack.getPoints();
+        points.add(new LatLng(location.getLatitude(), location.getLongitude()));
+        gpsTrack.setPoints(points);
     }
 }
