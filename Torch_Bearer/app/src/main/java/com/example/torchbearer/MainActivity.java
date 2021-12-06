@@ -19,23 +19,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
-import java.util.Map;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "TAG";
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-    private FirebaseFirestore fStore;
     private String userId;
-//    private TextView userName = findViewById(R.id.username);
-//    private TextView email = findViewById(R.id.email);
-//    private TextView phoneNum = findViewById(R.id.phone);
-//    private TextView password = findViewById(R.id.password);
-//    private ProgressBar progressBar = findViewById(R.id.progressBar);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         TextView passwordTxt = findViewById(R.id.password);
         ProgressBar progressBar = findViewById(R.id.progressBar);
 
-        fStore = FirebaseFirestore.getInstance();
 
         if (firebaseAuth.getCurrentUser() != null) {
             startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
@@ -104,24 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     Toast.makeText(MainActivity.this, "User Created.", Toast.LENGTH_LONG).show();
-                    userId = firebaseAuth.getCurrentUser().getUid();
-                    DocumentReference documentReference = fStore.collection("users").document(userId);
-                    Map<String, Object> user = new HashMap<>();
-                    user.put("username", username);
-                    user.put("email", email);
-                    user.put("phone", phone);
-                    documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.d(TAG, "onSuccess: User Profile is created for " + userId);
 
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d(TAG, "onFailure: " + e.toString());
-                        }
-                    });
                     startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
                 } else {
                     Toast.makeText(MainActivity.this, "Error! " + task.getException().getMessage(), Toast.LENGTH_LONG).show();

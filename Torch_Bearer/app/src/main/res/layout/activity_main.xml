@@ -126,13 +126,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Already Registered? Login Here"
+        android:onClick="login"
+        android:text="Already have a Torch Bearer account? Sign in"
         android:textColor="#3F51B5"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerBtn"
-        android:onClick="login"/>
+        app:layout_constraintTop_toBottomOf="@+id/registerBtn" />
 
     <ProgressBar
         android:id="@+id/progressBar"

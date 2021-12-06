@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Torch Bearer</string>
+    <string name="facebook_app_id">743811976577834</string>
+    <string name="fb_login_protocol_scheme">fb743811976577834</string>
+
 </resources>
