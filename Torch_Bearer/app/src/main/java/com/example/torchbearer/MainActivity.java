@@ -123,6 +123,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public void onLocationChanged(@NonNull Location location) {
         if (location != null) {
             saveLocation(location);
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15.0f));
         } else {
             Toast.makeText(this, "No location", Toast.LENGTH_SHORT).show();
         }
