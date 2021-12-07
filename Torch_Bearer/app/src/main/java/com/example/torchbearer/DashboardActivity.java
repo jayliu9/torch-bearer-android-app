@@ -8,7 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,32 +23,32 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    private static final String TAG = "TAG";
-    private TextView username;
-    private TextView email;
-    private TextView phoneNum;
+    private static final String TAG = DashboardActivity.class.getSimpleName();
 
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore fStore;
-
     private String userId;
-
     private Button verifyBtn;
     private TextView verifyMsg;
+    private ListView listView;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
-        username = findViewById(R.id.usernameTxt);
-        email = findViewById(R.id.emailTxt);
-        phoneNum = findViewById(R.id.phoneTxt);
 
         firebaseAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -54,10 +56,10 @@ public class DashboardActivity extends AppCompatActivity {
         verifyBtn = findViewById(R.id.verifyBtn);
         verifyMsg = findViewById(R.id.verifyMsg);
 
-        userId = firebaseAuth.getCurrentUser().getUid();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+        listView = findViewById(R.id.listView);
 
-//        handleSignInResult();
+        user = firebaseAuth.getCurrentUser();
+        userId = firebaseAuth.getCurrentUser().getUid();
 
         if (user.isEmailVerified()) {
             verifyBtn.setVisibility(View.VISIBLE);
@@ -82,34 +84,25 @@ public class DashboardActivity extends AppCompatActivity {
             });
         }
 
-        DocumentReference documentReference = fStore.collection("users").document(userId);
-        documentReference.addSnapshotListener(this, (documentSnapshot, e) -> {
-            username.setText(documentSnapshot.getString("username"));
-            email.setText(documentSnapshot.getString("email"));
-            phoneNum.setText(documentSnapshot.getString("phone"));
-        });
-    }
+        List<String> list = new ArrayList<>();
+        ArrayAdapter<String> adapter = new ArrayAdapter(this, R.layout.list_item, list);
+        listView.setAdapter(adapter);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(userId);
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                list.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    list.add(ds.getValue().toString());
+                }
+                adapter.notifyDataSetChanged();
+            }
 
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount acct = completedTask.getResult(ApiException.class);
-
-            if (acct != null) {
-                String personName = acct.getDisplayName();
-                String personGivenName = acct.getGivenName();
-                String personFamilyName = acct.getFamilyName();
-                String personEmail = acct.getEmail();
-                String personId = acct.getId();
-                Uri personPhoto = acct.getPhotoUrl();
-
-                username.setText(personName);
-                email.setText(personEmail);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        } catch (ApiException e) {
-            e.printStackTrace();
-            Log.d("GOOGLE ERROR", e.getMessage());
-        }
+        });
     }
 
     public void logout(View view) {
@@ -118,7 +111,7 @@ public class DashboardActivity extends AppCompatActivity {
         GoogleSignIn.getClient(this, new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()).signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -126,8 +119,8 @@ public class DashboardActivity extends AppCompatActivity {
                 Toast.makeText(DashboardActivity.this, "Signout Failed.", Toast.LENGTH_LONG).show();
             }
         });
-        
-        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
         finish();
     }
 }

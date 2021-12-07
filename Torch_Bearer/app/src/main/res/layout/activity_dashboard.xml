@@ -20,38 +20,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.15" />
 
-    <TextView
-        android:id="@+id/usernameTxt"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="User Name"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="20dp"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileTxt"
-        app:layout_constraintVertical_bias="0.08" />
+        app:layout_constraintTop_toBottomOf="@+id/profileTxt" />
 
-    <TextView
-        android:id="@+id/emailTxt"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Email Address"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameTxt"
-        app:layout_constraintVertical_bias="0.05" />
-
-    <TextView
-        android:id="@+id/phoneTxt"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:text="Phone Number"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailTxt"
-        app:layout_constraintVertical_bias="0.05" />
 
     <Button
         android:id="@+id/logoutBtn"
@@ -63,22 +43,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phoneTxt" />
+        app:layout_constraintTop_toBottomOf="@+id/verifyBtn" />
 
     <TextView
         android:id="@+id/verifyMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Email Not Verified!"
-        android:textColor="#F44336"
+        android:textColor="#2196F3"
         android:textSize="16sp"
         android:textStyle="bold"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/phoneTxt"
-        app:layout_constraintVertical_bias="0.134" />
+        app:layout_constraintTop_toBottomOf="@+id/listView"
+        app:layout_constraintVertical_bias="0.060000002" />
 
     <Button
         android:id="@+id/verifyBtn"
@@ -91,6 +71,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/verifyMsg" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
