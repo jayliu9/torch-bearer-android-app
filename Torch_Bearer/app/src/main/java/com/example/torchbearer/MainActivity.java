@@ -17,7 +17,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -38,25 +43,54 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+    
     GoogleMap map;
+    ToggleButton toggle;
 
     private DatabaseReference reference;
     private LocationManager manager;
     private Polyline gpsTrack;
 
+    private List<PolylineOptions> pathOptions;
+    private User user;
+    private String username;
     private final int MIN_TIME = 500;
     private final int MIN_DISTANCE = 1;
+    private boolean isOn;
+    private RuntimeDatabase mDatabase;
 
-    Marker myMaker;
+    private Marker myMaker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        reference = FirebaseDatabase.getInstance().getReference().child("User-101");
+
+        toggle = (ToggleButton) findViewById(R.id.toggleButton);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    isOn = true;
+                } else {
+                    isOn = false;
+                    savePath();
+                    initializePastPath();
+                    resetPolyline();
+                }
+            }
+        });
+
+        initializeDb();
+        user = new User("User-101");
+        reference = mDatabase.getChildReference(user.getUsername());
+        initializeCurrentUser();
+        //reference = FirebaseDatabase.getInstance().getReference().child("User-101");
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         //FirebaseDatabase.getInstance().getReference().setValue("This is Torch Bearer");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -67,8 +101,44 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         readChanges();
     }
 
+    private void resetPolyline() {
+        PolylineOptions polylineOptions = new PolylineOptions();
+        polylineOptions.color(Color.RED);
+        polylineOptions.width(4);
+        gpsTrack = map.addPolyline(polylineOptions);
+    }
+
+    private void savePath() {
+//        PolylineOptions newLineOptions = new PolylineOptions();
+//        newLineOptions.color(Color.RED);
+//        newLineOptions.width(4);
+//        LatLng[] points = gpsTrack.getPoints().toArray(new LatLng[0]);
+//        newLineOptions.add(points);
+//        pathOptions.add(newLineOptions);
+        reference.child("paths").child("Path" + user.getNumOfPath()).setValue(gpsTrack.getPoints());
+        user.pathIncrease();
+    }
+
+    private void initializeDb() {
+        mDatabase = new RuntimeDatabase(MainActivity.this);
+    }
+
+
+    private void initializeCurrentUser() {
+        Bundle extras = getIntent().getExtras();
+        if (true) {//extras != null) {
+            //username = extras.getString("username");
+            username = user.getUsername();
+            Log.i(TAG, "Current username is '" + username + "'.");
+        } else {
+            Log.e(TAG, "No username passed to activity!!!");
+        }
+        mDatabase.createUserIfNotExist(username);
+    }
+
+
     private void readChanges() {
-        reference.addValueEventListener(new ValueEventListener() {
+        reference.child("location").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -144,7 +214,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         polylineOptions.color(Color.RED);
         polylineOptions.width(4);
         gpsTrack = map.addPolyline(polylineOptions);
+
+        initializePastPath();
     }
+
+    private void initializePastPath() {
+        pathOptions = new ArrayList<>();
+        mDatabase.showPastPath(username, pathOptions);
+        for (PolylineOptions pathOption : pathOptions) {
+            Polyline path = map.addPolyline(pathOption);
+        }
+    }
+
 
     private BitmapDescriptor BitMapFromVector(Context applicationContext, int ic_torch) {
         Drawable vectorDrawable = ContextCompat.getDrawable(applicationContext, ic_torch);
@@ -159,7 +240,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public void onLocationChanged(@NonNull Location location) {
         if (location != null) {
             saveLocation(location);
-            updateTrack(location);
+            if (isOn)
+                updateTrack(location);
             map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
         } else {
             Toast.makeText(this, "No location", Toast.LENGTH_SHORT).show();
@@ -168,7 +250,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void saveLocation(Location location) {
-        reference.setValue(location);
+        reference.child("location").setValue(location);
     }
 
     private void updateTrack(Location location) {
