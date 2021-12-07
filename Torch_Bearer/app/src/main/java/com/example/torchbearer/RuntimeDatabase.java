@@ -3,7 +3,6 @@ package com.example.torchbearer;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 
@@ -35,49 +34,43 @@ public class RuntimeDatabase {
     }
 
     public void createUser(String username) {
-        getDbReference(username).setValue(new User(username));
+        getChildReference(username).setValue(new User(username));
     }
 
     public void createUserToken(String username, String token) {
         mDatabase.child(TOKENS_TABLE).child(username).setValue(token);
     }
 
-    public void createUserIfNotExist(String username) {
-        getDbReference(username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e(TAG, "Error getting data", task.getException());
-                } else {
-                    User user = task.getResult().getValue(User.class);
-
-                    if (null == user) {
-                        Log.i(TAG, "User '" + username + "' doesn't exist. Creating one...");
-                        createUser(username);
-                    } else {
-                        Log.i(TAG, "User '" + username + "' already exists. Skipped creation");
-                    }
-                }
-            }
-        });
-    }
-    private DatabaseReference getDbReference(String username) {
-        return mDatabase
-                .child(USERS_TABLE_NAME)
-                .child(username);
-    }
+//    public void createUserIfNotExist(String username) {
+//        getChildReference(username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DataSnapshot> task) {
+//                if (!task.isSuccessful()) {
+//                    Log.e(TAG, "Error getting data", task.getException());
+//                } else {
+//                    User user = task.getResult().getValue(User.class);
+//
+//                    if (null == user) {
+//                        Log.i(TAG, "User '" + username + "' doesn't exist. Creating one...");
+//                        createUser(username);
+//                    } else {
+//                        Log.i(TAG, "User '" + username + "' already exists. Skipped creation");
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     public DatabaseReference getChildReference(String child) {
         return this.mDatabase.child(USERS_TABLE_NAME).child(child);
     }
 
-    public void showPastPath(String username, List<PolylineOptions> paths) {
-        getDbReference(username).child("paths").addValueEventListener(new ValueEventListener() {
+    public void showPastPath(String username, List<PolylineOptions> paths, PolylineOptionsCallBack myCallBack) {
+        getChildReference(username).child("paths").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                paths.clear();
                 PolylineOptions polylineOptions = new PolylineOptions();
-                polylineOptions.color(Color.RED);
-                polylineOptions.width(4);
                 for(DataSnapshot ds : snapshot.getChildren()) {
                     for (DataSnapshot dsChild : ds.getChildren()) {
                         double latitude = dsChild.child("latitude").getValue(Double.class);
@@ -88,8 +81,8 @@ public class RuntimeDatabase {
                     polylineOptions = new PolylineOptions();
                 }
 
+                myCallBack.onCallBack(paths);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 

@@ -80,16 +80,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     isOn = false;
                     savePath();
-                    initializePastPath();
                     resetPolyline();
                 }
             }
         });
 
         initializeDb();
-        user = new User("User-101");
-        reference = mDatabase.getChildReference(user.getUsername());
-        initializeCurrentUser();
+        //user = new User("User-101");
+        //reference = mDatabase.getChildReference("User-101");
+        initializeCurrentUser("User-101");
+        reference = mDatabase.getChildReference("User-101");
+        username = "User-101";
         //reference = FirebaseDatabase.getInstance().getReference().child("User-101");
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         //FirebaseDatabase.getInstance().getReference().setValue("This is Torch Bearer");
@@ -115,8 +116,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 //        LatLng[] points = gpsTrack.getPoints().toArray(new LatLng[0]);
 //        newLineOptions.add(points);
 //        pathOptions.add(newLineOptions);
-        reference.child("paths").child("Path" + user.getNumOfPath()).setValue(gpsTrack.getPoints());
-        user.pathIncrease();
+        int currNum = user.getNumOfPath();
+        reference.child("paths").child("Path" + currNum).setValue(gpsTrack.getPoints());
+        reference.child("numOfPath").setValue(currNum + 1);
     }
 
     private void initializeDb() {
@@ -124,16 +126,37 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    private void initializeCurrentUser() {
+    private void initializeCurrentUser(String usernameInput) {
         Bundle extras = getIntent().getExtras();
-        if (true) {//extras != null) {
-            //username = extras.getString("username");
-            username = user.getUsername();
-            Log.i(TAG, "Current username is '" + username + "'.");
-        } else {
-            Log.e(TAG, "No username passed to activity!!!");
-        }
-        mDatabase.createUserIfNotExist(username);
+        String finalUsername = usernameInput;
+        mDatabase.getChildReference(usernameInput).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+                User userInDB = dataSnapshot.getValue(User.class);
+                if (userInDB == null) {
+                    mDatabase.createUser(finalUsername);
+                    user = new User(finalUsername);
+                } else {
+                    user = userInDB;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
+
+//        if (true) {//extras != null) {
+//            //username = extras.getString("username");
+//            username = user.getUsername();
+//            Log.i(TAG, "Current username is '" + username + "'.");
+//        } else {
+//            Log.e(TAG, "No username passed to activity!!!");
+//        }
+//        mDatabase.createUser(username);
     }
 
 
@@ -220,10 +243,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void initializePastPath() {
         pathOptions = new ArrayList<>();
-        mDatabase.showPastPath(username, pathOptions);
-        for (PolylineOptions pathOption : pathOptions) {
-            Polyline path = map.addPolyline(pathOption);
-        }
+        mDatabase.showPastPath(username, pathOptions, new PolylineOptionsCallBack() {
+            @Override
+            public void onCallBack(List<PolylineOptions> paths) {
+                for (PolylineOptions pathOption : pathOptions) {
+                    pathOption.color(Color.RED);
+                    pathOption.width(4);
+                    Polyline path = map.addPolyline(pathOption);
+                }
+            }
+        });
     }
 
 

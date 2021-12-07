@@ -1,39 +1,37 @@
 package com.example.torchbearer;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class User implements Serializable {
 
     private String username;
-    private List<PolylineOptions> paths;
+    private Map<String, List<LatLngForUser>> paths;
     private MyLocation location;
     private String token;
     private int numOfPath;
 
     public User() {
-        this.paths = new ArrayList<>();
+        this.paths = new HashMap<>();
         this.numOfPath = 0;
     }
 
     public User(String username) {
         this.username = username;
-        this.paths = new ArrayList<>();
+        this.paths = new HashMap<>();
         this.numOfPath = 0;
     }
 
-    public User(String username, List<PolylineOptions> paths) {
+    public User(String username, Map<String, List<LatLngForUser>> paths) {
         this.username = username;
         this.paths = paths;
         this.numOfPath = 0;
     }
 
-    public User(String username, List<PolylineOptions> paths, int numOfPath) {
+    public User(String username, Map<String, List<LatLngForUser>> paths, int numOfPath) {
         this.username = username;
         this.paths = paths;
         this.numOfPath = numOfPath;
@@ -47,6 +45,7 @@ public class User implements Serializable {
                 ", paths=" + paths +
                 ", location=" + location +
                 ", token='" + token + '\'' +
+                ", numOfPath=" + numOfPath +
                 '}';
     }
 
@@ -58,11 +57,11 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    public List<PolylineOptions> getPaths() {
+    public Map<String, List<LatLngForUser>> getPaths() {
         return paths;
     }
 
-    public void setPaths(List<PolylineOptions> paths) {
+    public void setPaths(Map<String, List<LatLngForUser>> paths) {
         this.paths = paths;
     }
 
