@@ -111,9 +111,9 @@
             android:layout_centerHorizontal="true"
             android:background="@drawable/custom_edit_button"
             android:backgroundTint="@null"
+            app:backgroundTint="@null"
             android:text="EDIT PROFILE"
-            android:textColor="#97f4f3"
-            app:backgroundTint="@null" />
+            android:textColor="#97f4f3" />
     </RelativeLayout>
 
 
