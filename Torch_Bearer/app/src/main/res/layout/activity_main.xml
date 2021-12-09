@@ -22,4 +22,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <com.example.torchbearer.HideOverlayView
+        android:id="@+id/hideview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
 </androidx.constraintlayout.widget.ConstraintLayout>
