@@ -88,11 +88,6 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
                 final Point point2 = projection.toScreenLocation(line.get(i));
                 mBitmapCanvas.drawLine(point1.x, point1.y, point2.x, point2.y, mPaintPath);
             }
-            mPaintPath = new Paint();
-            mPaintPath.setColor(Color.WHITE);
-            mPaintPath.setStrokeWidth(25);
-            mPaintPath.setAlpha(255);
-            mPaintPath.setStrokeCap(Paint.Cap.ROUND);
         }
 
         canvas.drawBitmap(mBitmap, null, new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), mPaintBitmap);
@@ -109,14 +104,13 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
 
         mPaintBackground = new Paint();
         mPaintBackground.setColor(Color.BLACK);
-        mPaintBackground.setAlpha(155);
+        mPaintBackground.setAlpha(255);
         mPaintBackground.setStrokeWidth(15);
 
         mPaintBitmap = new Paint();
         mPaintBitmap.setAlpha(50);
 
         mPathPoints = new ArrayList<>();
-        mPathPoints.add(new ArrayList<>());
 
     }
 
@@ -142,15 +136,17 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
 
     public void setPathPoints(final List<List<LatLng>> pathPoints) {
         mPathPoints = pathPoints;
+        this.mPathPoints.add(new ArrayList<>());
     }
 
     public void addPoint(final LatLng point) {
+        if (this.mPathPoints.isEmpty()) {
+            this.mPathPoints.add(new ArrayList<>());
+        }
         this.mPathPoints.get(this.mPathPoints.size() - 1).add(point);
-        System.out.println("hello" + (this.mPathPoints.size() - 1));
     }
 
     public void resetLine() {
-        System.out.println("reset line" + (this.mPathPoints.size() - 1));
         this.mPathPoints.add(new ArrayList<>());
     }
 

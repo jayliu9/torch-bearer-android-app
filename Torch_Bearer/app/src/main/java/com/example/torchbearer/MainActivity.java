@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     isOn = false;
                     savePath();
 //                    resetPolyline();
-                    initTransparentLine();
                     mMapView.resetLine();
                 }
             }
@@ -151,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 gpsTrack = map.addPolyline(polylineOptions);
                 //initial
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS,15));
-
+                initTransparentLine();
             }
         });
 
@@ -213,9 +212,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void savePath() {
-        int currNum = user.getNumOfPath();
         reference.child("paths").setValue(mMapView.getmPathPoints());
-        reference.child("numOfPath").setValue(currNum + 1);
     }
 
     private void initializeDb() {
@@ -329,32 +326,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         polylineOptions.width(4);
         gpsTrack = map.addPolyline(polylineOptions);
 
-//        initializePastPath();
 
         map.moveCamera(CameraUpdateFactory.newCameraPosition(
                 CameraPosition.fromLatLngZoom(new LatLng(47, -122), 15)));
     }
 
-//    private void initializePastPath() {
-//        pathOptions = new ArrayList<>();
-//        mDatabase.showPastPath(username, pathOptions, new PolylineOptionsCallBack() {
-//            @Override
-//            public void onCallBack(List<PolylineOptions> paths) {
-//                for (PolylineOptions pathOption : pathOptions) {
-//                    pathOption.color(Color.RED);
-//                    pathOption.width(4);
-//                    Polyline path = map.addPolyline(pathOption);
-//                }
-//            }
-//        });
-//    }
 
     private void initTransparentLine() {
         transparentLines = new ArrayList<>();
         mDatabase.showTransLine(username, transparentLines, new TransparentLineCallBack() {
             @Override
             public void onCallBack(List<List<LatLng>> paths) {
-                mMapView.setPathPoints(transparentLines);
+                mMapView.setPathPoints(paths);
             }
         });
     }
@@ -375,7 +358,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             saveLocation(location);
             if (isOn)
                 updateTrack(location);
-            map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15f));
         } else {
             Toast.makeText(this, "No location", Toast.LENGTH_SHORT).show();
         }
@@ -387,9 +370,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void updateTrack(Location location) {
-        List<LatLng> points = gpsTrack.getPoints();
-        points.add(new LatLng(location.getLatitude(), location.getLongitude()));
-        gpsTrack.setPoints(points);
         mMapView.addPoint(new LatLng(location.getLatitude(), location.getLongitude()));
 
 //        circle = drawCircle(new LatLng(location.getLatitude(), location.getLongitude()));
