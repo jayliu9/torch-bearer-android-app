@@ -80,10 +80,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void register(View view) {
-        startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
-    }
-
     public void forgotPassword(View view) {
         final EditText resetMail = new EditText(view.getContext());
         final AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(view.getContext());
@@ -117,5 +113,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         passwordResetDialog.create().show();
+    }
+
+    public void register(View view) {
+        startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
     }
 }

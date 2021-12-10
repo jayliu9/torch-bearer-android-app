@@ -1,11 +1,15 @@
 package com.example.torchbearer;
 
+
 public class User {
+    private String userId;
     private String username;
     private String email;
     private String phoneNum;
+    private String token;
 
-    public User() {
+    public User(String userId) {
+        this.username = userId;
     }
 
     public User(String username, String email) {
@@ -29,5 +33,28 @@ public class User {
 
     public String getPhoneNum() {
         return this.phoneNum;
+    }
+
+
+    public String getToken() {
+        return token;
+    }
+
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

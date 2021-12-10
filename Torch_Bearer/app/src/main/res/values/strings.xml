@@ -2,5 +2,10 @@
     <string name="app_name">Torch Bearer</string>
     <string name="facebook_app_id">743811976577834</string>
     <string name="fb_login_protocol_scheme">fb743811976577834</string>
+    <string name="map_key" translatable="false">
+        AIzaSyCfKNY2IHJDIlSLOHDwNhbrJ71Qrf6aFFk
+    </string>
+    <string name="channel_id">Channel_Name_Torch_Bearer</string>
+
 
 </resources>

@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -36,6 +35,8 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private ProgressBar progressBar;
 
+    private RealtimeDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +49,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.progressBar);
+
+        db = new RealtimeDatabase(RegisterActivity.this);
+
     }
 
     public void register(View view) {
@@ -110,7 +114,6 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     });
 
-//                    DAOUser dao = new DAOUser();
 
                     String username = usernameTxt.getText().toString();
                     String phone = phoneTxt.getText().toString();
@@ -118,20 +121,21 @@ public class RegisterActivity extends AppCompatActivity {
 
                     User user = new User(username, email, phone);
 
-                    FirebaseDatabase.getInstance()
-                            .getReference("Users")
-                            .child(fuser.getUid())
-                            .setValue(user)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(RegisterActivity.this, "Successfully added to database.", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(RegisterActivity.this, "Failed to be added to database.", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            });
+                    db.createUser(fuser.getUid(), user);
+//                    FirebaseDatabase.getInstance()
+//                            .getReference("Users")
+//                            .child(fuser.getUid())
+//                            .setValue(user)
+//                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<Void> task) {
+//                                    if (task.isSuccessful()) {
+//                                        Toast.makeText(RegisterActivity.this, "Successfully added to database.", Toast.LENGTH_LONG).show();
+//                                    } else {
+//                                        Toast.makeText(RegisterActivity.this, "Failed to be added to database.", Toast.LENGTH_LONG).show();
+//                                    }
+//                                }
+//                            });
 
                     Toast.makeText(RegisterActivity.this, "User Created.", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
