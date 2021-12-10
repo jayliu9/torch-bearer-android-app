@@ -32,7 +32,7 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
     private Paint mPaintPath;
     private Paint mPaintBackground;
     private Paint mPaintBitmap;
-    private List<LatLng> mPathPoints;
+    private List<List<LatLng>> mPathPoints;
     private Bitmap mBitmap;
     private Canvas mBitmapCanvas;
 
@@ -62,11 +62,11 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
         super.dispatchDraw(canvas);
         canvas.save();
         drawPolylineOverTheMap(canvas);
-        canvas.restore();
+//        canvas.restore();
     }
 
     private void drawPolylineOverTheMap(Canvas canvas) {
-        if (mGoogleMap == null || mPathPoints == null || mPathPoints.size() < 2) {
+        if (mGoogleMap == null || mPathPoints == null) {
             return;
         }
 
@@ -82,10 +82,17 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
         mPaintPath.setStrokeWidth(lineWidth);
 
         Projection projection = mGoogleMap.getProjection();
-        for (int i = 1; i < mPathPoints.size(); i++) {
-            final Point point1 = projection.toScreenLocation(mPathPoints.get(i-1));
-            final Point point2 = projection.toScreenLocation(mPathPoints.get(i));
-            mBitmapCanvas.drawLine(point1.x, point1.y, point2.x, point2.y, mPaintPath);
+        for (List<LatLng> line : mPathPoints) {
+            for (int i = 1; i < line.size(); i++) {
+                final Point point1 = projection.toScreenLocation(line.get(i-1));
+                final Point point2 = projection.toScreenLocation(line.get(i));
+                mBitmapCanvas.drawLine(point1.x, point1.y, point2.x, point2.y, mPaintPath);
+            }
+            mPaintPath = new Paint();
+            mPaintPath.setColor(Color.WHITE);
+            mPaintPath.setStrokeWidth(25);
+            mPaintPath.setAlpha(255);
+            mPaintPath.setStrokeCap(Paint.Cap.ROUND);
         }
 
         canvas.drawBitmap(mBitmap, null, new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), mPaintBitmap);
@@ -109,6 +116,8 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
         mPaintBitmap.setAlpha(50);
 
         mPathPoints = new ArrayList<>();
+        mPathPoints.add(new ArrayList<>());
+
     }
 
     @Override
@@ -131,11 +140,21 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
         }
     }
 
-    public void setPathPoints(final List<LatLng> pathPoints) {
+    public void setPathPoints(final List<List<LatLng>> pathPoints) {
         mPathPoints = pathPoints;
     }
 
     public void addPoint(final LatLng point) {
-        this.mPathPoints.add(point);
+        this.mPathPoints.get(this.mPathPoints.size() - 1).add(point);
+        System.out.println("hello" + (this.mPathPoints.size() - 1));
+    }
+
+    public void resetLine() {
+        System.out.println("reset line" + (this.mPathPoints.size() - 1));
+        this.mPathPoints.add(new ArrayList<>());
+    }
+
+    public List<List<LatLng>> getmPathPoints() {
+        return mPathPoints;
     }
 }

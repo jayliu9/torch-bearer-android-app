@@ -2,6 +2,7 @@ package com.example.torchbearer;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,29 +10,29 @@ import java.util.Map;
 public class User implements Serializable {
 
     private String username;
-    private Map<String, List<LatLngForUser>> paths;
+    private List<List<LatLngForUser>> paths;
     private MyLocation location;
     private String token;
     private int numOfPath;
 
     public User() {
-        this.paths = new HashMap<>();
+        this.paths = new ArrayList<>();
         this.numOfPath = 0;
     }
 
     public User(String username) {
         this.username = username;
-        this.paths = new HashMap<>();
+        this.paths = new ArrayList<>();
         this.numOfPath = 0;
     }
 
-    public User(String username, Map<String, List<LatLngForUser>> paths) {
+    public User(String username, List<List<LatLngForUser>> paths) {
         this.username = username;
         this.paths = paths;
         this.numOfPath = 0;
     }
 
-    public User(String username, Map<String, List<LatLngForUser>> paths, int numOfPath) {
+    public User(String username, List<List<LatLngForUser>> paths, int numOfPath) {
         this.username = username;
         this.paths = paths;
         this.numOfPath = numOfPath;
@@ -57,11 +58,11 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    public Map<String, List<LatLngForUser>> getPaths() {
+    public List<List<LatLngForUser>> getPaths() {
         return paths;
     }
 
-    public void setPaths(Map<String, List<LatLngForUser>> paths) {
+    public void setPaths(List<List<LatLngForUser>> paths) {
         this.paths = paths;
     }
 
