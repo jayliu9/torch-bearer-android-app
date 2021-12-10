@@ -65,20 +65,20 @@ public class RuntimeDatabase {
         return this.mDatabase.child(USERS_TABLE_NAME).child(child);
     }
 
-    public void showPastPath(String username, List<PolylineOptions> paths, PolylineOptionsCallBack myCallBack) {
+
+    public void showTransLine(String username, List<List<LatLng>> paths, TransparentLineCallBack myCallBack) {
         getChildReference(username).child("paths").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 paths.clear();
-                PolylineOptions polylineOptions = new PolylineOptions();
                 for(DataSnapshot ds : snapshot.getChildren()) {
+                    List<LatLng> line = new ArrayList<>();
                     for (DataSnapshot dsChild : ds.getChildren()) {
                         double latitude = dsChild.child("latitude").getValue(Double.class);
                         double longitude = dsChild.child("longitude").getValue(Double.class);
-                        polylineOptions.add(new LatLng(latitude, longitude));
+                        line.add(new LatLng(latitude, longitude));
                     }
-                    paths.add(polylineOptions);
-                    polylineOptions = new PolylineOptions();
+                    paths.add(line);
                 }
 
                 myCallBack.onCallBack(paths);

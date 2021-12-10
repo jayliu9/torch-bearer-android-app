@@ -76,12 +76,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RuntimeDatabase mDatabase;
 
     private Marker myMaker;
-    //Camera change
-    private HideOverlayView hideView;
-    private List<Marker> visibleMarkers = new ArrayList<>();
-
-    //circle
-    Circle circle;
 
     //squar
 
@@ -90,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private PathMapView mMapView;
 
 
+    List<List<LatLng>> transparentLines;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +98,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 } else {
                     isOn = false;
                     savePath();
-                    resetPolyline();
+//                    resetPolyline();
+                    initTransparentLine();
+                    mMapView.resetLine();
                 }
             }
         });
@@ -147,21 +144,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 LatLng seattle = new LatLng(47.99728191304702, -122.1898995151709677);
                 myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker")
                         .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
-                final ArrayList<LatLng> pathPoints = new ArrayList<>();
-                pathPoints.add(new LatLng(47.99728191304702, -122.1898995151709677));
-                pathPoints.add(new LatLng(47.99729343143402, -122.1915964365223883));
-                pathPoints.add(new LatLng(47.997462367423275, -122.1892870924275978));
-                pathPoints.add(new LatLng(47.99732798657649, -122.1888979488094147));
-                pathPoints.add(new LatLng(47.99848364819607, -122.1887576019291894));
-                pathPoints.add(new LatLng(47.99842989717891, -122.1903460734198053));
-                pathPoints.add(new LatLng(47.99632203666474, -122.1900781384562662));
-                pathPoints.add(new LatLng(47.99728959196756, -122.1898484799275026));
 
                 PolylineOptions polylineOptions = new PolylineOptions();
                 polylineOptions.color(Color.RED);
                 polylineOptions.width(4);
                 gpsTrack = map.addPolyline(polylineOptions);
-                mMapView.setPathPoints(pathPoints);
+                //initial
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS,15));
 
             }
@@ -225,14 +213,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void savePath() {
-//        PolylineOptions newLineOptions = new PolylineOptions();
-//        newLineOptions.color(Color.RED);
-//        newLineOptions.width(4);
-//        LatLng[] points = gpsTrack.getPoints().toArray(new LatLng[0]);
-//        newLineOptions.add(points);
-//        pathOptions.add(newLineOptions);
         int currNum = user.getNumOfPath();
-        reference.child("paths").child("Path" + currNum).setValue(gpsTrack.getPoints());
+        reference.child("paths").setValue(mMapView.getmPathPoints());
         reference.child("numOfPath").setValue(currNum + 1);
     }
 
@@ -284,7 +266,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         MyLocation location = snapshot.getValue(MyLocation.class);
                         if (location != null) {
                             myMaker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
-                            mMapView.addPoint(new LatLng(location.getLatitude(), location.getLongitude()));
                         }
                     } catch (Exception e) {
                         Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -348,22 +329,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         polylineOptions.width(4);
         gpsTrack = map.addPolyline(polylineOptions);
 
-        initializePastPath();
+//        initializePastPath();
 
         map.moveCamera(CameraUpdateFactory.newCameraPosition(
                 CameraPosition.fromLatLngZoom(new LatLng(47, -122), 15)));
     }
 
-    private void initializePastPath() {
-        pathOptions = new ArrayList<>();
-        mDatabase.showPastPath(username, pathOptions, new PolylineOptionsCallBack() {
+//    private void initializePastPath() {
+//        pathOptions = new ArrayList<>();
+//        mDatabase.showPastPath(username, pathOptions, new PolylineOptionsCallBack() {
+//            @Override
+//            public void onCallBack(List<PolylineOptions> paths) {
+//                for (PolylineOptions pathOption : pathOptions) {
+//                    pathOption.color(Color.RED);
+//                    pathOption.width(4);
+//                    Polyline path = map.addPolyline(pathOption);
+//                }
+//            }
+//        });
+//    }
+
+    private void initTransparentLine() {
+        transparentLines = new ArrayList<>();
+        mDatabase.showTransLine(username, transparentLines, new TransparentLineCallBack() {
             @Override
-            public void onCallBack(List<PolylineOptions> paths) {
-                for (PolylineOptions pathOption : pathOptions) {
-                    pathOption.color(Color.RED);
-                    pathOption.width(4);
-                    Polyline path = map.addPolyline(pathOption);
-                }
+            public void onCallBack(List<List<LatLng>> paths) {
+                mMapView.setPathPoints(transparentLines);
             }
         });
     }
@@ -399,7 +390,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         List<LatLng> points = gpsTrack.getPoints();
         points.add(new LatLng(location.getLatitude(), location.getLongitude()));
         gpsTrack.setPoints(points);
-        mMapView.setPathPoints(points);
+        mMapView.addPoint(new LatLng(location.getLatitude(), location.getLongitude()));
 
 //        circle = drawCircle(new LatLng(location.getLatitude(), location.getLongitude()));
 
