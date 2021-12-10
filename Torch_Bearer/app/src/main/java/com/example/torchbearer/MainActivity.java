@@ -18,7 +18,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -35,9 +37,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -50,7 +56,7 @@ import com.google.maps.android.SphericalUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     
@@ -74,11 +80,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private HideOverlayView hideView;
     private List<Marker> visibleMarkers = new ArrayList<>();
 
+    //circle
+    Circle circle;
+
+    //squar
+
+    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+    static final LatLng V_ICE_SCREAMS = new LatLng(47.99728191304702, -122.1898995151709677);
+    private PathMapView mMapView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+//
         toggle = (ToggleButton) findViewById(R.id.toggleButton);
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -91,25 +107,114 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+//
+//        initializeDb();
+//        //user = new User("User-101");
+//        //reference = mDatabase.getChildReference("User-101");
+//        initializeCurrentUser("User-101");
+//        reference = mDatabase.getChildReference("User-101");
+//        username = "User-101";
+//        //reference = FirebaseDatabase.getInstance().getReference().child("User-101");
+//        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
+//        //FirebaseDatabase.getInstance().getReference().setValue("This is Torch Bearer");
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                .findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
+//        getLocationUpdate();
+//
+//        readChanges();
 
+        //Squar
+
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
         initializeDb();
-        //user = new User("User-101");
-        //reference = mDatabase.getChildReference("User-101");
         initializeCurrentUser("User-101");
         reference = mDatabase.getChildReference("User-101");
         username = "User-101";
-        //reference = FirebaseDatabase.getInstance().getReference().child("User-101");
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        //FirebaseDatabase.getInstance().getReference().setValue("This is Torch Bearer");
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        getLocationUpdate();
+        mMapView = (PathMapView) findViewById(R.id.pathView);
+        mMapView.onCreate(mapViewBundle);
+        mMapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                map = googleMap;
+                map.getUiSettings().setZoomControlsEnabled(true);
+                map.getUiSettings().setAllGesturesEnabled(true);
+                map.getUiSettings().setMyLocationButtonEnabled(true);
+                LatLng seattle = new LatLng(47.99728191304702, -122.1898995151709677);
+                myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker")
+                        .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
+                final ArrayList<LatLng> pathPoints = new ArrayList<>();
+                pathPoints.add(new LatLng(47.99728191304702, -122.1898995151709677));
+                pathPoints.add(new LatLng(47.99729343143402, -122.1915964365223883));
+                pathPoints.add(new LatLng(47.997462367423275, -122.1892870924275978));
+                pathPoints.add(new LatLng(47.99732798657649, -122.1888979488094147));
+                pathPoints.add(new LatLng(47.99848364819607, -122.1887576019291894));
+                pathPoints.add(new LatLng(47.99842989717891, -122.1903460734198053));
+                pathPoints.add(new LatLng(47.99632203666474, -122.1900781384562662));
+                pathPoints.add(new LatLng(47.99728959196756, -122.1898484799275026));
 
+                PolylineOptions polylineOptions = new PolylineOptions();
+                polylineOptions.color(Color.RED);
+                polylineOptions.width(4);
+                gpsTrack = map.addPolyline(polylineOptions);
+                mMapView.setPathPoints(pathPoints);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS,15));
+
+            }
+        });
+
+        getLocationUpdate();
         readChanges();
 
-        //hide view
-        hideView = (HideOverlayView) findViewById(R.id.hideview);
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        mMapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mMapView.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mMapView.onStop();
+    }
+    @Override
+    protected void onPause() {
+        mMapView.onPause();
+        super.onPause();
+    }
+    @Override
+    protected void onDestroy() {
+        mMapView.onDestroy();
+        super.onDestroy();
+    }
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
     }
 
     private void resetPolyline() {
@@ -179,6 +284,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         MyLocation location = snapshot.getValue(MyLocation.class);
                         if (location != null) {
                             myMaker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+                            mMapView.addPoint(new LatLng(location.getLatitude(), location.getLongitude()));
                         }
                     } catch (Exception e) {
                         Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -229,18 +335,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(@NonNull GoogleMap googleMap) {
         map = googleMap;
 
-        LatLng seattle = new LatLng(47, -122);
+        LatLng seattle = new LatLng(47.99728191304702, -122.1898995151709677);
         myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker")
                 .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
-//        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-//                PackageManager.PERMISSION_GRANTED &&
-//                ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
-//                        PackageManager.PERMISSION_GRANTED) {
-//            map.setMyLocationEnabled(true);
-//            map.getUiSettings().setMyLocationButtonEnabled(true);
-//        }
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setAllGesturesEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(true);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(seattle, 15.0f));
 
         PolylineOptions polylineOptions = new PolylineOptions();
@@ -249,6 +349,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         gpsTrack = map.addPolyline(polylineOptions);
 
         initializePastPath();
+
+        map.moveCamera(CameraUpdateFactory.newCameraPosition(
+                CameraPosition.fromLatLngZoom(new LatLng(47, -122), 15)));
     }
 
     private void initializePastPath() {
@@ -296,70 +399,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         List<LatLng> points = gpsTrack.getPoints();
         points.add(new LatLng(location.getLatitude(), location.getLongitude()));
         gpsTrack.setPoints(points);
-    }
+        mMapView.setPathPoints(points);
 
-    @Override
-    public void onCameraIdle() {
-
-    }
-
-    @Override
-    public void onCameraMove() {
-//        CameraPosition cameraPosition = map.getCameraPosition();
-//        Projection projection = map.getProjection();
-//
-//        mDatabase.showPastPath(username, pathOptions, new PolylineOptionsCallBack() {
-//            @Override
-//            public void onCallBack(List<PolylineOptions> paths) {
-//                List<Point> visiblePoints = new ArrayList<>();
-//                float radius = 150f; // meters
-//                Point centerPoint = projection.toScreenLocation(cameraPosition.target);
-//                Point radiusPoint = projection.toScreenLocation(
-//                        SphericalUtil.computeOffset(cameraPosition.target, radius, 90));
-//
-//                float radiusPx = (float) Math.sqrt(Math.pow(centerPoint.x - radiusPoint.x, 2));
-//                for (PolylineOptions pathOption : pathOptions) {
-//                    for (LatLng latLng : pathOption.getPoints()) {
-//                        visiblePoints.add(projection.toScreenLocation(latLng);
-//                    }
-////                    pathOption.color(Color.RED);
-////                    pathOption.width(4);
-////                    Polyline path = map.addPolyline(pathOption);
-//                }
-//                hideView.reDraw(visiblePoints, radiusPx);
-//            }
-//        });
-//
-
-    }
-
-    @Override
-    public void onCameraMoveStarted(int i) {
-        CameraPosition cameraPosition = map.getCameraPosition();
-        Projection projection = map.getProjection();
-
-        mDatabase.showPastPath(username, pathOptions, new PolylineOptionsCallBack() {
-            @Override
-            public void onCallBack(List<PolylineOptions> paths) {
-                List<Point> visiblePoints = new ArrayList<>();
-                float radius = 150f; // meters
-                Point centerPoint = projection.toScreenLocation(cameraPosition.target);
-                Point radiusPoint = projection.toScreenLocation(
-                        SphericalUtil.computeOffset(cameraPosition.target, radius, 90));
-
-                float radiusPx = (float) Math.sqrt(Math.pow(centerPoint.x - radiusPoint.x, 2));
-                for (PolylineOptions pathOption : pathOptions) {
-                    for (LatLng latLng : pathOption.getPoints()) {
-                        visiblePoints.add(projection.toScreenLocation(latLng));
-                    }
-//                    pathOption.color(Color.RED);
-//                    pathOption.width(4);
-//                    Polyline path = map.addPolyline(pathOption);
-                }
-                hideView.reDraw(visiblePoints, radiusPx);
-            }
-        });
-
+//        circle = drawCircle(new LatLng(location.getLatitude(), location.getLongitude()));
 
     }
 }
