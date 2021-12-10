@@ -1,5 +1,6 @@
 package com.example.torchbearer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -14,12 +15,14 @@ import androidx.annotation.Nullable;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PathMapView extends MapView implements OnMapReadyCallback {
 
@@ -29,10 +32,11 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
     private Paint mPaintPath;
     private Paint mPaintBackground;
     private Paint mPaintBitmap;
-    private ArrayList<LatLng> mPathPoints;
+    private List<LatLng> mPathPoints;
     private Bitmap mBitmap;
     private Canvas mBitmapCanvas;
 
+    @SuppressLint("ValidFragment")
     public PathMapView(@NonNull Context context) {
         super(context);
         init();
@@ -103,6 +107,8 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
 
         mPaintBitmap = new Paint();
         mPaintBitmap.setAlpha(50);
+
+        mPathPoints = new ArrayList<>();
     }
 
     @Override
@@ -125,7 +131,11 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
         }
     }
 
-    public void setPathPoints(final ArrayList<LatLng> pathPoints) {
+    public void setPathPoints(final List<LatLng> pathPoints) {
         mPathPoints = pathPoints;
+    }
+
+    public void addPoint(final LatLng point) {
+        this.mPathPoints.add(point);
     }
 }

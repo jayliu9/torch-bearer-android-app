@@ -62,6 +62,11 @@ public class HideOverlayView extends LinearLayout {
         paint.setAlpha(150);
         osCanvas.drawRect(outerRectangle, paint);
 
+        paint.setColor(Color.TRANSPARENT);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
+        paint.setStyle(Paint.Style.FILL);
+        osCanvas.drawCircle(0, 1500, radius, paint);
+
         if (radius > 0 && points != null) {
             for (Point point : points) {
                 paint.setColor(Color.TRANSPARENT);
