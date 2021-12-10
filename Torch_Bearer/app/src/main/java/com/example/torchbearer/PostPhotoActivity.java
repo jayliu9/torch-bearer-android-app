@@ -46,6 +46,7 @@ public class PostPhotoActivity extends AppCompatActivity {
     String currentPhotoPath;
     String currentPhotoFileName;
     Uri currentPhotoURI;
+    String currentLocation;
 
     StorageReference storageReference;
 
@@ -60,6 +61,9 @@ public class PostPhotoActivity extends AppCompatActivity {
         postButton = findViewById(R.id.post);
 
         postButton.setEnabled(false);
+
+        // TODO: replace with real location
+        currentLocation = "seattle";
 
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -218,8 +222,7 @@ public class PostPhotoActivity extends AppCompatActivity {
     }
 
     private void uploadToFirebase(String fileName, Uri uri) {
-// Create a reference to "mountains.jpg"
-        StorageReference image = storageReference.child("images/" + fileName);
+        StorageReference image = storageReference.child(currentLocation + "/" + fileName);
 
 //// Create a reference to 'images/mountains.jpg'
 //        StorageReference mountainImagesRef = storageRef.child("images/mountains.jpg");
@@ -229,8 +232,13 @@ public class PostPhotoActivity extends AppCompatActivity {
         image.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(PostPhotoActivity.this, "Success!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PostPhotoActivity.this, "Photo Posted Successfully!", Toast.LENGTH_SHORT).show();
 
+                postButton.setEnabled(false);
+                imageSelected.setImageResource(android.R.color.transparent);
+
+
+//                imageSelected.cl
                 image.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {

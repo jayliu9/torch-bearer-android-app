@@ -1,8 +1,9 @@
 package com.example.torchbearer;
 
 import static com.example.torchbearer.PhotoContent.deleteSavedImages;
-import static com.example.torchbearer.PhotoContent.downloadRandomImage;
+import static com.example.torchbearer.PhotoContent.downloadImage;
 import static com.example.torchbearer.PhotoContent.loadSavedImages;
+import static com.example.torchbearer.PostPhotoActivity.TAG;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
@@ -16,9 +17,7 @@ import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -78,6 +77,8 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
     List<Uri> uriList;
     int currentPhotoIndex;
 
+    String currentLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,8 +98,11 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
             recyclerView.addItemDecoration(dividerItemDecoration);
         }
 
+        // TODO: replace with actual location
+        currentLocation = "seattle";
+
         storageReference = FirebaseStorage.getInstance().getReference();
-        StorageReference images = storageReference.child("images/");
+        StorageReference images = storageReference.child(currentLocation + "/");
 
         uriList = new ArrayList<>();
         currentPhotoIndex = 0;
@@ -119,9 +123,16 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
                                 public void onSuccess(Uri uri) {
                                     Log.i("DOWNLOAD", "Success " + uri.toString());
                                     uriList.add(uri);
+                                    downloadImage(downloadManager, context, uri);
                                 }
                             });
                         }
+//                        Uri uri;
+//                        for (; currentPhotoIndex < uriList.size() && currentPhotoIndex < 10; currentPhotoIndex++) {
+//                            Log.i(TAG, "DOWNLOAD " + currentPhotoIndex);
+//                            uri = uriList.get(currentPhotoIndex);
+//                            downloadImage(downloadManager, context, uri);
+//                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -131,7 +142,6 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
                         Log.i("DOWNLOAD", "FAILED");
                     }
                 });
-
 
         progressBar = findViewById(R.id.indeterminateBar);
 
@@ -149,7 +159,7 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
                             uri = uriList.get(currentPhotoIndex);
                             currentPhotoIndex++;
                         }
-                        downloadRandomImage(downloadManager, context, uri);
+                        downloadImage(downloadManager, context, uri);
 
                     }
                 });
@@ -158,6 +168,8 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
 
         onComplete = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
+                Log.i(TAG, "DOWNLOAD complete" + currentPhotoIndex);
+
                 String filePath="";
                 DownloadManager.Query q = new DownloadManager.Query();
                 q.setFilterById(intent.getExtras().getLong(DownloadManager.EXTRA_DOWNLOAD_ID));
@@ -179,6 +191,16 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
         };
 
         context.registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+
+        Uri uri;
+        Log.i(TAG, "DOWNLOAD " + currentPhotoIndex);
+        Log.i(TAG, "URIList " + uriList);
+
+//        for (; currentPhotoIndex < uriList.size() && currentPhotoIndex < 10; currentPhotoIndex++) {
+//            Log.i(TAG, "DOWNLOAD " + currentPhotoIndex);
+//            uri = uriList.get(currentPhotoIndex);
+//            downloadImage(downloadManager, context, uri);
+//        }
     }
 
     @Override
@@ -217,7 +239,15 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                loadSavedImages(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
+//                loadSavedImages(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
+                PhotoContent.ITEMS.clear();
+                deleteSavedImages(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
+
+//                Uri uri = null;
+//                for (; currentPhotoIndex < uriList.size() && currentPhotoIndex < 10; currentPhotoIndex++) {
+//                    uri = uriList.get(currentPhotoIndex);
+//                    downloadImage(downloadManager, context, uri);
+//                }
                 recyclerViewAdapter.notifyDataSetChanged();
             }
         });

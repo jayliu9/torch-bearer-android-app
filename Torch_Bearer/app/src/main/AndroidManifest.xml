@@ -20,13 +20,7 @@
             android:label="@string/title_activity_view_photos_at_location"
             android:theme="@style/Theme.TorchBearer.NoActionBar" />
         <activity
-            android:name=".ViewPhotosActivity"
-            android:exported="false" />
-        <activity
             android:name=".PostPhotoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PhotoVideoSharing"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

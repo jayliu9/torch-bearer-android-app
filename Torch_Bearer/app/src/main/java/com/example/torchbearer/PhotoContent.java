@@ -29,6 +29,16 @@ public class PhotoContent {
                 String absolutePath = file.getAbsolutePath();
                 String extension = absolutePath.substring(absolutePath.lastIndexOf("."));
                 if (extension.equals(".jpg")) {
+                    file.delete();
+                }
+            }
+        }
+        if (dir.exists()) {
+            File[] files = dir.listFiles();
+            for (File file : files) {
+                String absolutePath = file.getAbsolutePath();
+                String extension = absolutePath.substring(absolutePath.lastIndexOf("."));
+                if (extension.equals(".jpg")) {
                     loadImage(file);
                 }
             }
@@ -49,7 +59,7 @@ public class PhotoContent {
         ITEMS.clear();
     }
 
-    public static void downloadRandomImage(DownloadManager downloadmanager, Context context, Uri uri) {
+    public static void downloadImage(DownloadManager downloadmanager, Context context, Uri uri) {
 
         long ts = System.currentTimeMillis();
         uri = uri == null ? Uri.parse(context.getString(R.string.image_download_url)) : uri;
@@ -79,6 +89,9 @@ public class PhotoContent {
         PhotoItem newItem = new PhotoItem();
         newItem.uri = Uri.fromFile(file);
         newItem.date = getDateFromUri(newItem.uri);
+        newItem.date = "Posted by Henry\nAt " + new SimpleDateFormat("yyyy-MM-dd  HH:mm")
+                .format(new Date());
+
         addItem(newItem);
     }
 

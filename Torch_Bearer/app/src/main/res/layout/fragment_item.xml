@@ -6,11 +6,11 @@
 
     <ImageView
         android:id="@+id/item_image_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:contentDescription="@string/app_name"
-        android:scaleType="centerInside"
-        android:padding="10dp" />
+        android:padding="5dp"
+        android:scaleType="fitStart" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
