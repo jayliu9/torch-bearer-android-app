@@ -65,17 +65,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     GoogleMap map;
     ToggleButton toggle;
-    Button profile;
 
     private DatabaseReference reference;
     private LocationManager manager;
 
+    private FirebaseAuth firebaseAuth;
+    private String userId;
+
     private User user;
-    private String username;
     private final int MIN_TIME = 500;
     private final int MIN_DISTANCE = 1;
     private boolean isOn;
-    private RuntimeDatabase mDatabase;
+    private RealtimeDatabase mDatabase;
 
     private Marker myMaker;
     private List<Marker> markers;
@@ -87,16 +88,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
     static final LatLng V_ICE_SCREAMS = new LatLng(47.99728191304702, -122.1898995151709677);
     private PathMapView mMapView;
-
-
-
+    private List<LatLng> clicked;
 
     List<List<LatLng>> transparentLines;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        userId = firebaseAuth.getCurrentUser().getUid();
 
         toggle = (ToggleButton) findViewById(R.id.toggleButton);
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -118,18 +120,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
         }
         initializeDb();
-        initializeCurrentUser("User-101");
-        reference = mDatabase.getChildReference("User-101");
-        username = "User-101";
-        profile = (Button) findViewById(R.id.profile);
-        profile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentToProfile = new Intent(MapActivity.this, ProfileActivity.class);
-                intentToProfile.putExtra("userID", username);
-                startActivity(intentToProfile);
-            }
-        });
+//        initializeCurrentUser("User-101");
+        initializeCurrentUser(userId);
+//        reference = mDatabase.getChildReference("User-101");
+        reference = mDatabase.getChildReference(userId);
+//        username = "User-101";
+
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mMapView = (PathMapView) findViewById(R.id.pathView);
         mMapView.onCreate(mapViewBundle);
@@ -143,11 +139,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 LatLng seattle = new LatLng(47.99728191304702, -122.1898995151709677);
                 myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker")
                         .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
-
+                clicked = new ArrayList<>();
+                initialClickedState();
                 initialMarkers();
                 if (markerOptions.isEmpty()) {
                     createMarkers();
                 }
+                map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+                        marker.setIcon(BitMapFromVector(getApplicationContext(), R.drawable.ic_campfire));
+                        if (!clicked.contains(marker.getPosition())) {
+                            clicked.add(marker.getPosition());
+                            saveMarkerState(clicked);
+                            System.out.println("clicked add " + marker);
+                            System.out.println(clicked);
+                        }
+                        return false;
+                    }
+                });
                 //initial
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS, 15f));
 //                map.animateCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS,15));
@@ -158,6 +168,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         readChanges();
 
     }
+
+
+    public void showProfile(View view) {
+        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -221,31 +237,31 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void initializeDb() {
-        mDatabase = new RuntimeDatabase(MapActivity.this);
+        mDatabase = new RealtimeDatabase(MapActivity.this);
     }
 
-    private void initializeCurrentUser(String usernameInput) {
-        Bundle extras = getIntent().getExtras();
-        String finalUsername = usernameInput;
-        mDatabase.getChildReference(usernameInput).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Get Post object and use the values to update the UI
-                User userInDB = dataSnapshot.getValue(User.class);
-                if (userInDB == null) {
-                    mDatabase.createUser(finalUsername);
-                    user = new User(finalUsername);
-                } else {
-                    user = userInDB;
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-            }
-        });
+//    private void initializeCurrentUser(String usernameInput) {
+//        Bundle extras = getIntent().getExtras();
+//        String finalUsername = usernameInput;
+//        mDatabase.getChildReference(usernameInput).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // Get Post object and use the values to update the UI
+//                User userInDB = dataSnapshot.getValue(User.class);
+//                if (userInDB == null) {
+//                    mDatabase.createUser(finalUsername);
+//                    user = new User(finalUsername);
+//                } else {
+//                    user = userInDB;
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                // Getting Post failed, log a message
+//                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+//            }
+//        });
 
 //        if (true) {//extras != null) {
 //            //username = extras.getString("username");
@@ -255,11 +271,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //            Log.e(TAG, "No username passed to activity!!!");
 //        }
 //        mDatabase.createUser(username);
+//    }
+
+    private void initializeCurrentUser(String userId) {
+
+        mDatabase.getChildReference(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Get Post object and use the values to update the UI
+                user = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+            }
+        });
     }
 
     private void initTransparentLine() {
         transparentLines = new ArrayList<>();
-        mDatabase.showTransparentLine(username, transparentLines, new TransparentLineCallBack() {
+        mDatabase.showTransparentLine(userId, transparentLines, new TransparentLineCallBack() {
             @Override
             public void onCallBack(List<List<LatLng>> paths) {
                 mMapView.setPathPoints(paths);
@@ -267,18 +300,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }
 
+    private void initialClickedState() {
+        System.out.println(clicked + "click empty");
+        mDatabase.onUpdateClickedState(userId, clicked, new ClickedStateCallBack() {
+            @Override
+            public void onCallBack(List<LatLng> clickedCallBack) {
+                clicked = clickedCallBack;
+            }
+        });
+    }
+
     private void initialMarkers() {
         markerOptions = new ArrayList<>();
-        mDatabase.showMarkers(username, markerOptions, new MarkerCallBack() {
+        mDatabase.showMarkers(userId, markerOptions, new MarkerCallBack() {
             @Override
             public void onCallBack(List<MarkerOptions> markerOpts) {
                 for (MarkerOptions markerOption : markerOpts) {
-                    markerOption.icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_wood_logs));
+                    if (clicked.contains(markerOption.getPosition())) {
+                        markerOption.icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_campfire));
+                    } else {
+                        markerOption.icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_wood_logs));
+                    }
                     map.addMarker(markerOption);
                 }
             }
         });
     }
+
 
     private void readChanges() {
         reference.child("location").addValueEventListener(new ValueEventListener() {
@@ -328,6 +376,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void saveLocation(Location location) {
         reference.child("location").setValue(location);
+    }
+
+    private void saveMarkerState(List<LatLng> clicked) {
+        reference.child("clicked").setValue(clicked);
     }
 
     private void updateTrack(Location location) {
@@ -387,11 +439,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (result[0] < radius)
                 marker.setVisible(true);
         };
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
     }
 
     //    private void displayPastMarker(List<Marker> markers) {

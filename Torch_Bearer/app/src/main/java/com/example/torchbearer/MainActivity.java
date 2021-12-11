@@ -44,15 +44,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-    private CallbackManager callbackManager;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         googleBtnUi();
-//        facebookSignIn();
 
         ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -150,57 +147,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-
-    public void facebookSignIn() {
-
-        FacebookSdk.fullyInitialize();
-        AppEventsLogger.activateApp(getApplication());
-
-        LoginButton facebookBtn = findViewById(R.id.facebookBtn);
-
-        callbackManager = CallbackManager.Factory.create();
-
-        facebookBtn.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-
-                Log.d(TAG, "onSuccess" + loginResult);
-                AuthCredential authCredential = FacebookAuthProvider.getCredential(loginResult.getAccessToken().getToken());
-
-                firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Toast.makeText(getApplicationContext(), "Your Facebook Account is Connected to Our Application.", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(getApplicationContext(), MapActivity.class));
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Your Facebook Account Failed to Connect Our Application.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onCancel() {
-                Log.d(TAG, "onCancel");
-            }
-
-            @Override
-            public void onError(@NonNull FacebookException e) {
-                Log.d(TAG, "onError");
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-
-            }
-        });
-    }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        callbackManager.onActivityResult(requestCode, resultCode, data);
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
 
 
     public void emailSignIn(View view) {

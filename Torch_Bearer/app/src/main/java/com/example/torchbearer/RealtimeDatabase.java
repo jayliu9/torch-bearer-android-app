@@ -167,8 +167,23 @@ public class RealtimeDatabase {
         });
     }
 
-    private void updatePath(String userId, DataSnapshot dataSnapshot, List<Polyline> paths) {
-        paths = dataSnapshot.getValue(List.class);
+    public void onUpdateClickedState(String userId, List<LatLng> clicked, ClickedStateCallBack myCallBack) {
+        getChildReference(userId).child("clicked").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    double latitude = ds.child("latitude").getValue(Double.class);
+                    double longitude = ds.child("longitude").getValue(Double.class);
+                    clicked.add(new LatLng(latitude, longitude));
+                }
+                myCallBack.onCallBack(clicked);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 }

@@ -31,6 +31,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
+        android:onClick="showProfile"
         android:id="@+id/profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

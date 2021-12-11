@@ -35,11 +35,15 @@
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/progress.xml" value="0.1875" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/menu/achievement_menu.xml" value="0.38385416666666666" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.4744791666666667" />
+        <entry key="app/src/main/res/drawable/ic_campfire.xml" value="0.19537037037037036" />
+        <entry key="app/src/main/res/drawable/ic_torch.xml" value="0.19537037037037036" />
         <entry key="app/src/main/res/layout/activity_anthentication.xml" value="0.33229166666666665" />
         <entry key="app/src/main/res/layout/activity_edit_profile.xml" value="0.44006725359178056" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.33229166666666665" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33229166666666665" />
         <entry key="app/src/main/res/layout/activity_map.xml" value="0.33229166666666665" />
         <entry key="app/src/main/res/layout/activity_profile.xml" value="0.33229166666666665" />
+        <entry key="app/src/main/res/layout/activity_register.xml" value="0.33229166666666665" />
       </map>
     </option>
   </component>

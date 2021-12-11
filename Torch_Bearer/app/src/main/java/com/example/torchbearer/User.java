@@ -23,11 +23,13 @@ public class User implements Serializable {
     private String email;
     private String phoneNum;
     private List<MarkerOptions> markerOptions;
+    private List<LatLngForUser> clicked;
 
     public User() {
         this.paths = new ArrayList<>();
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
+        this.clicked = new ArrayList<>();
     }
 
     public User(String username) {
@@ -35,6 +37,7 @@ public class User implements Serializable {
         this.paths = new ArrayList<>();
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
+        this.clicked = new ArrayList<>();
     }
 
     public User(String username, String email) {
@@ -43,6 +46,7 @@ public class User implements Serializable {
         this.paths = new ArrayList<>();
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
+        this.clicked = new ArrayList<>();
     }
 
     public User(String username, String phoneNum, String email) {
@@ -52,6 +56,7 @@ public class User implements Serializable {
         this.paths = new ArrayList<>();
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
+        this.clicked = new ArrayList<>();
     }
 
     public User(String username, List<List<LatLngForUser>> paths) {
@@ -59,6 +64,7 @@ public class User implements Serializable {
         this.paths = paths;
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
+        this.clicked = new ArrayList<>();
     }
 
     public User(String username, List<List<LatLngForUser>> paths, int numOfPath) {
@@ -66,6 +72,7 @@ public class User implements Serializable {
         this.paths = paths;
         this.numOfPath = numOfPath;
         this.markerOptions = new ArrayList<>();
+        this.clicked = new ArrayList<>();
     }
 
 
@@ -78,6 +85,7 @@ public class User implements Serializable {
                 ", token='" + token + '\'' +
                 ", numOfPath=" + numOfPath +
                 ", markers=" + markerOptions +
+                ", clicked=" + clicked +
                 '}';
     }
 
@@ -167,5 +175,13 @@ public class User implements Serializable {
 
     public void setMarkerOptions(List<MarkerOptions> markerOptions) {
         this.markerOptions = markerOptions;
+    }
+
+    public List<LatLngForUser> getClicked() {
+        return clicked;
+    }
+
+    public void setClicked(List<LatLngForUser> clicked) {
+        this.clicked = clicked;
     }
 }

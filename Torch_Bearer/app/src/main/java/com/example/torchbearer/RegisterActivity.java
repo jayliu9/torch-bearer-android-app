@@ -21,7 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
+
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -64,12 +64,8 @@ public class RegisterActivity extends AppCompatActivity {
             usernameTxt.setText(personName);
         }
 
-
-        String username = usernameTxt.getText().toString();
-        String phone = phoneTxt.getText().toString();
         String email = emailTxt.getText().toString().trim();
         String password = passwordTxt.getText().toString().trim();
-
 
         if (TextUtils.isEmpty(email)) {
             emailTxt.setError("Email is Required");
@@ -122,23 +118,9 @@ public class RegisterActivity extends AppCompatActivity {
                     User user = new User(username, email, phone);
 
                     db.createUser(fuser.getUid(), user);
-//                    FirebaseDatabase.getInstance()
-//                            .getReference("Users")
-//                            .child(fuser.getUid())
-//                            .setValue(user)
-//                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//                                    if (task.isSuccessful()) {
-//                                        Toast.makeText(RegisterActivity.this, "Successfully added to database.", Toast.LENGTH_LONG).show();
-//                                    } else {
-//                                        Toast.makeText(RegisterActivity.this, "Failed to be added to database.", Toast.LENGTH_LONG).show();
-//                                    }
-//                                }
-//                            });
 
                     Toast.makeText(RegisterActivity.this, "User Created.", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                    startActivity(new Intent(getApplicationContext(), MapActivity.class));
 
                 } else {
                     Toast.makeText(RegisterActivity.this, "Error! " + task.getException().getMessage(), Toast.LENGTH_LONG).show();

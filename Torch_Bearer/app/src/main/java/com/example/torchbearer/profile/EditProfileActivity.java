@@ -41,7 +41,11 @@ public class EditProfileActivity extends AppCompatActivity {
         String usernameStr = username.getText().toString();
         String phoneNumStr = phone.getText().toString();
 
-        db.onUpdateUsername(userId, usernameStr);
-        db.onUpdateUserPhoneNum(userId, phoneNumStr);
+        if (!usernameStr.equals("")) {
+            db.onUpdateUsername(userId, usernameStr);
+        }
+        if (!phoneNumStr.equals("")) {
+            db.onUpdateUserPhoneNum(userId, phoneNumStr);
+        }
     }
 }
