@@ -31,7 +31,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -176,10 +175,7 @@ public class ProfileActivity extends AppCompatActivity {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(imageUri));
     }
 
-//    private void logout() {
-//        FirebaseAuth.getInstance().signOut();
-//        //startActivity(new Intent(this, LoginActivity.class));
-//    }
+
 
     private void startEditProfileActivity() {
         startActivity(new Intent(this, EditProfileActivity.class));
@@ -191,7 +187,6 @@ public class ProfileActivity extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         activityResultLauncher.launch(intent);
     }
-
 
 
     private void uploadImage() {
@@ -256,6 +251,5 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        finish();
     }
 }

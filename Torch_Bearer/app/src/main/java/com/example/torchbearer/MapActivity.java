@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
@@ -12,48 +11,36 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.google.android.gms.common.api.GoogleApi;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.example.torchbearer.Notifications.SendNotification;
+import com.example.torchbearer.achievement.AchievementMap;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.maps.android.SphericalUtil;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.example.torchbearer.profile.ProfileActivity;
 
 import java.util.ArrayList;
@@ -71,6 +58,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private FirebaseAuth firebaseAuth;
     private String userId;
+    private String userToken;
+    private String achievement;
 
     private User user;
     private final int MIN_TIME = 500;
@@ -166,13 +155,53 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
         getLocationUpdate();
         readChanges();
-
+        updateToken();
     }
-
 
     public void showProfile(View view) {
         startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
     }
+
+    private void updateToken() {
+        // Generate and updates the token
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                if (!task.isSuccessful()) {
+                    Toast.makeText(MapActivity.this, "Something is wrong!", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    userToken = task.getResult();
+
+                    Log.e("CLIENT_REGISTRATION_TOKEN", userToken);
+                    Toast.makeText(MapActivity.this, "CLIENT_REGISTRATION_TOKEN Existed", Toast.LENGTH_SHORT).show();
+                    mDatabase.onUpdateToken(userId, userToken);
+                }
+            }
+        });
+    }
+
+
+    private void sendNotification(View view) {
+
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference("Users").child(userId);
+        database.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                String receiverToken = user.getToken();
+                SendNotification notification = new SendNotification();
+                notification.sendMessageToDevice(view, receiverToken, achievement, MapActivity.this);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
