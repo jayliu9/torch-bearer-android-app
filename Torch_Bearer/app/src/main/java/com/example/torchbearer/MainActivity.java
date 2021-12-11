@@ -213,12 +213,4 @@ public class MainActivity extends AppCompatActivity {
     public void emailSignIn(View view) {
         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
     }
-
-    public void openPostPhotoActivity(View view) {
-        startActivity(new Intent(MainActivity.this, PostPhotoActivity.class));
-    }
-
-    public void openViewPhotoActivity(View view) {
-        startActivity(new Intent(MainActivity.this, ViewPhotosAtLocationActivity.class));
-    }
 }

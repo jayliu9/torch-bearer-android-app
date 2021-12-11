@@ -399,4 +399,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //            if (marker.id
 //        }
 //    }
+
+    public void openPostPhotoActivity(View view) {
+        startActivity(new Intent(MapActivity.this, PostPhotoActivity.class));
+    }
+
+    public void openViewPhotoActivity(View view) {
+        startActivity(new Intent(MapActivity.this, ViewPhotosAtLocationActivity.class));
+    }
 }
