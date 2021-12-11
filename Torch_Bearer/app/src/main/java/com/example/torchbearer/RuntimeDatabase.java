@@ -7,6 +7,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -66,7 +68,7 @@ public class RuntimeDatabase {
     }
 
 
-    public void showTransLine(String username, List<List<LatLng>> paths, TransparentLineCallBack myCallBack) {
+    public void showTransparentLine(String username, List<List<LatLng>> paths, TransparentLineCallBack myCallBack) {
         getChildReference(username).child("paths").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -83,6 +85,27 @@ public class RuntimeDatabase {
 
                 myCallBack.onCallBack(paths);
             }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void showMarkers(String username, List<MarkerOptions> markerOptions, MarkerCallBack myCallBack) {
+        getChildReference(username).child("markers").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    MarkerOptions markerOption = ds.getValue(MarkerOptions.class);
+                    Double latitude = ds.child("position").child("latitude").getValue(Double.class);
+                    Double longitude = ds.child("position").child("longitude").getValue(Double.class);
+                    markerOption.position(new LatLng(latitude, longitude));
+                    markerOptions.add(markerOption);
+                }
+                myCallBack.onCallBack(markerOptions);
+            }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 

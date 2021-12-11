@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -52,6 +53,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.SphericalUtil;
+import com.example.torchbearer.profile.ProfileActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,15 +61,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    
+
     GoogleMap map;
     ToggleButton toggle;
+    Button profile;
 
     private DatabaseReference reference;
     private LocationManager manager;
-    private Polyline gpsTrack;
 
-    private List<PolylineOptions> pathOptions;
     private User user;
     private String username;
     private final int MIN_TIME = 500;
@@ -76,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RuntimeDatabase mDatabase;
 
     private Marker myMaker;
+    private List<Marker> markers;
+    private List<MarkerOptions> markerOptions;
+    private List<Boolean> markersVisible;
 
     //squar
 
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//
+
         toggle = (ToggleButton) findViewById(R.id.toggleButton);
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -98,29 +102,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 } else {
                     isOn = false;
                     savePath();
-//                    resetPolyline();
-//                    initTransparentLine();
+                    saveMarkers(markers);
                     mMapView.resetLine();
                 }
             }
         });
-//
-//        initializeDb();
-//        //user = new User("User-101");
-//        //reference = mDatabase.getChildReference("User-101");
-//        initializeCurrentUser("User-101");
-//        reference = mDatabase.getChildReference("User-101");
-//        username = "User-101";
-//        //reference = FirebaseDatabase.getInstance().getReference().child("User-101");
-//        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-//        //FirebaseDatabase.getInstance().getReference().setValue("This is Torch Bearer");
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(this);
-//        getLocationUpdate();
-//
-//        readChanges();
-
         //Squar
 
         Bundle mapViewBundle = null;
@@ -131,6 +117,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         initializeCurrentUser("User-101");
         reference = mDatabase.getChildReference("User-101");
         username = "User-101";
+        profile = (Button) findViewById(R.id.profile);
+        profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentToProfile = new Intent(MainActivity.this, ProfileActivity.class);
+                intentToProfile.putExtra("userID", username);
+                startActivity(intentToProfile);
+            }
+        });
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mMapView = (PathMapView) findViewById(R.id.pathView);
         mMapView.onCreate(mapViewBundle);
@@ -145,16 +140,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker")
                         .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
 
-                PolylineOptions polylineOptions = new PolylineOptions();
-                polylineOptions.color(Color.RED);
-                polylineOptions.width(4);
-                gpsTrack = map.addPolyline(polylineOptions);
+                initialMarkers();
+                if (markerOptions.isEmpty()) {
+                    createMarkers();
+                }
                 //initial
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS,15));
-
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS, 15f));
+//                map.animateCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS,15));
+                initTransparentLine();
             }
         });
-
         getLocationUpdate();
         readChanges();
 
@@ -205,23 +200,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMapView.onLowMemory();
     }
 
-    private void resetPolyline() {
-        PolylineOptions polylineOptions = new PolylineOptions();
-        polylineOptions.color(Color.RED);
-        polylineOptions.width(4);
-        gpsTrack = map.addPolyline(polylineOptions);
-    }
+    private void createMarkers() {
+        this.markers = new ArrayList<>();
+        LatLng spaceNeedle = new LatLng(47.620506, -122.349277);
+        LatLng amazonSpheres = new LatLng(47.615556, -122.339444);
 
-    private void savePath() {
-//        int currNum = user.getNumOfPath();
-        reference.child("paths").setValue(mMapView.getmPathPoints());
-//        reference.child("numOfPath").setValue(currNum + 1);
+        Marker mark1 = map.addMarker(new MarkerOptions().position(spaceNeedle).title("Space Needles")
+                .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_wood_logs)));
+        mark1.setVisible(false);
+        markers.add(mark1);
+
+        Marker mark2 = map.addMarker(new MarkerOptions().position(amazonSpheres).title("Amazon Spheres")
+                .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_wood_logs)));
+        mark2.setVisible(false);
+        markers.add(mark2);
     }
 
     private void initializeDb() {
         mDatabase = new RuntimeDatabase(MainActivity.this);
     }
-
 
     private void initializeCurrentUser(String usernameInput) {
         Bundle extras = getIntent().getExtras();
@@ -256,6 +253,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        mDatabase.createUser(username);
     }
 
+    private void initTransparentLine() {
+        transparentLines = new ArrayList<>();
+        mDatabase.showTransparentLine(username, transparentLines, new TransparentLineCallBack() {
+            @Override
+            public void onCallBack(List<List<LatLng>> paths) {
+                mMapView.setPathPoints(paths);
+            }
+        });
+    }
+
+    private void initialMarkers() {
+        markerOptions = new ArrayList<>();
+        mDatabase.showMarkers(username, markerOptions, new MarkerCallBack() {
+            @Override
+            public void onCallBack(List<MarkerOptions> markerOpts) {
+                for (MarkerOptions markerOption : markerOpts) {
+                    markerOption.icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_wood_logs));
+                    map.addMarker(markerOption);
+                }
+            }
+        });
+    }
 
     private void readChanges() {
         reference.child("location").addValueEventListener(new ValueEventListener() {
@@ -280,11 +299,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        if (location != null) {
+            saveLocation(location);
+            if (isOn) {
+                updateTrack(location);
+                checkMarkersDistance(50);
+            }
+            map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+        } else {
+            Toast.makeText(this, "No location", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void savePath() {
+        reference.child("paths").setValue(mMapView.getmPathPoints());
+    }
+
+    private void saveMarkers(List<Marker> markers) {
+        reference.child("markers").setValue(markers);
+    }
+
+    private void saveLocation(Location location) {
+        reference.child("location").setValue(location);
+    }
+
+    private void updateTrack(Location location) {
+        mMapView.addPoint(new LatLng(location.getLatitude(), location.getLongitude()));
+    }
 
     private void getLocationUpdate() {
         if (manager != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
                 } else if (manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
@@ -314,51 +363,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        map = googleMap;
 
-        LatLng seattle = new LatLng(47.99728191304702, -122.1898995151709677);
-        myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker")
-                .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
-        map.getUiSettings().setZoomControlsEnabled(true);
-        map.getUiSettings().setAllGesturesEnabled(true);
-        map.getUiSettings().setMyLocationButtonEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(seattle, 15.0f));
-
-        PolylineOptions polylineOptions = new PolylineOptions();
-        polylineOptions.color(Color.RED);
-        polylineOptions.width(4);
-        gpsTrack = map.addPolyline(polylineOptions);
-
-//        initializePastPath();
-
-        map.moveCamera(CameraUpdateFactory.newCameraPosition(
-                CameraPosition.fromLatLngZoom(new LatLng(47, -122), 15)));
     }
-
-//    private void initializePastPath() {
-//        pathOptions = new ArrayList<>();
-//        mDatabase.showPastPath(username, pathOptions, new PolylineOptionsCallBack() {
-//            @Override
-//            public void onCallBack(List<PolylineOptions> paths) {
-//                for (PolylineOptions pathOption : pathOptions) {
-//                    pathOption.color(Color.RED);
-//                    pathOption.width(4);
-//                    Polyline path = map.addPolyline(pathOption);
-//                }
-//            }
-//        });
-//    }
-
-    private void initTransparentLine() {
-        transparentLines = new ArrayList<>();
-        mDatabase.showTransLine(username, transparentLines, new TransparentLineCallBack() {
-            @Override
-            public void onCallBack(List<List<LatLng>> paths) {
-                mMapView.setPathPoints(paths);
-            }
-        });
-    }
-
 
     private BitmapDescriptor BitMapFromVector(Context applicationContext, int ic_torch) {
         Drawable vectorDrawable = ContextCompat.getDrawable(applicationContext, ic_torch);
@@ -369,34 +375,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        if (location != null) {
-            saveLocation(location);
-            if (isOn)
-                updateTrack(location);
-            map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-        } else {
-            Toast.makeText(this, "No location", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    private void saveLocation(Location location) {
-        reference.child("location").setValue(location);
-    }
-
-    private void updateTrack(Location location) {
-        List<LatLng> points = gpsTrack.getPoints();
-        points.add(new LatLng(location.getLatitude(), location.getLongitude()));
-        gpsTrack.setPoints(points);
-        mMapView.addPoint(new LatLng(location.getLatitude(), location.getLongitude()));
-
-//        circle = drawCircle(new LatLng(location.getLatitude(), location.getLongitude()));
-
+    private void checkMarkersDistance(double radius) {
+        for (Marker marker : this.markers) {
+            LatLng markerLatLng = marker.getPosition();
+            float result[] = new float[1];
+            Location.distanceBetween(myMaker.getPosition().latitude, myMaker.getPosition().longitude, markerLatLng.latitude, markerLatLng.longitude, result);
+            if (result[0] < radius)
+                marker.setVisible(true);
+        };
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
+
     }
+
+    //    private void displayPastMarker(List<Marker> markers) {
+//        for (Marker marker : markers) {
+//            if (marker.id
+//        }
+//    }
 }

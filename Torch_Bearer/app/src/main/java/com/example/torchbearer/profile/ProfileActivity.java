@@ -9,23 +9,35 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.torchbearer.R;
 import com.example.torchbearer.RuntimeDatabase;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
+import java.io.IOException;
 
 public class ProfileActivity extends AppCompatActivity {
     private ImageView profileImage;
@@ -38,15 +50,28 @@ public class ProfileActivity extends AppCompatActivity {
     private StorageReference storageReference;
     private AlertDialog dialog;
     private StorageReference imageFileReference;
-
+    private ActivityResultLauncher<Intent> activityResultLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        userID = getIntent().getExtras().getString("userID");
         mDatabase = new RuntimeDatabase(this);
-        storageReference = FirebaseStorage.getInstance().getReference(userID);
+        storageReference = FirebaseStorage.getInstance().getReference();
         imageFileReference = storageReference.child("ProfileImages").child(userID);
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts
+                .StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    imageUri = result.getData().getData();
+                    profileImage.setImageURI(imageUri);
+                    uploadImage();
+                }
+            }
+        });
         profileImage = findViewById(R.id.imageview_profile);
+        setInitImage();
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +113,27 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
+    private void setInitImage() {
+        mDatabase.getChildReference(userID).child("ProfileImageUrl").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String url = snapshot.getValue(String.class);
+                if (url != null)
+                    Picasso.get().load(url).into(profileImage);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    private String getFileExtention() {
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(imageUri));
+    }
+
     private void logout() {
         FirebaseAuth.getInstance().signOut();
         //startActivity(new Intent(this, LoginActivity.class));
@@ -101,17 +147,7 @@ public class ProfileActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts
-                .StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    imageUri = result.getData().getData();
-                    uploadImage();
-                    profileImage.setImageURI(imageUri);
-                }
-            }
-        });
+        activityResultLauncher.launch(intent);
     }
 
 
@@ -125,8 +161,22 @@ public class ProfileActivity extends AppCompatActivity {
                         public void onSuccess(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
                             dialog.dismiss();
                             Toast.makeText(ProfileActivity.this, "Image uploaded", Toast.LENGTH_SHORT).show();
-                            String imageUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-                            mDatabase.getChildReference(userID).child("ProfileImageUrl").setValue(imageUrl);
+                            imageFileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(@NonNull Uri uri) {
+                                    mDatabase.getChildReference(userID).child("ProfileImageUrl").setValue(uri.toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if(task.isSuccessful()) {
+                                                Toast.makeText(ProfileActivity.this, "Image stored", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(ProfileActivity.this, "Error" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {

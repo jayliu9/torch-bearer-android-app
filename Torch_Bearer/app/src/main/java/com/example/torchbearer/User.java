@@ -1,6 +1,9 @@
 package com.example.torchbearer;
 
 
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,28 +19,33 @@ public class User implements Serializable {
     private int numOfPath;
     private double totalLength;
     private int logCount;
+    private List<MarkerOptions> markerOptions;
 
     public User() {
         this.paths = new ArrayList<>();
         this.numOfPath = 0;
+        this.markerOptions = new ArrayList<>();
     }
 
     public User(String username) {
         this.username = username;
         this.paths = new ArrayList<>();
         this.numOfPath = 0;
+        this.markerOptions = new ArrayList<>();
     }
 
     public User(String username, List<List<LatLngForUser>> paths) {
         this.username = username;
         this.paths = paths;
         this.numOfPath = 0;
+        this.markerOptions = new ArrayList<>();
     }
 
     public User(String username, List<List<LatLngForUser>> paths, int numOfPath) {
         this.username = username;
         this.paths = paths;
         this.numOfPath = numOfPath;
+        this.markerOptions = new ArrayList<>();
     }
 
 
@@ -49,6 +57,7 @@ public class User implements Serializable {
                 ", location=" + location +
                 ", token='" + token + '\'' +
                 ", numOfPath=" + numOfPath +
+                ", markers=" + markerOptions +
                 '}';
     }
 
@@ -96,6 +105,7 @@ public class User implements Serializable {
         this.numOfPath++;
     }
 
+
     public double getTotalLength() {
         return totalLength;
     }
@@ -110,5 +120,13 @@ public class User implements Serializable {
 
     public void setLogCount(int logCount) {
         this.logCount = logCount;
+    }
+
+    public List<MarkerOptions> getMarkers() {
+        return markerOptions;
+    }
+
+    public void setMarkers(List<MarkerOptions> markers) {
+        this.markerOptions = markers;
     }
 }
