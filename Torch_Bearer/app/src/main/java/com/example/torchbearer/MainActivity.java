@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -59,9 +60,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    
+
     GoogleMap map;
     ToggleButton toggle;
+    Button profile;
 
     private DatabaseReference reference;
     private LocationManager manager;
@@ -75,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private Marker myMaker;
     private List<Marker> markers;
+    private List<MarkerOptions> markerOptions;
+    private List<Boolean> markersVisible;
 
     //squar
 
@@ -89,6 +93,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //
+//        profile = (Button) findViewById(R.id.profile);
+//        profile.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intentToProfile = new Intent(MainActivity.class, ProfileActivity.java);
+//                startActivity(intentToProfile);
+//            }
+//        });
+
         toggle = (ToggleButton) findViewById(R.id.toggleButton);
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -97,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 } else {
                     isOn = false;
                     savePath();
+                    saveMarkers(markers);
                     mMapView.resetLine();
                 }
             }
@@ -126,6 +140,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
 
                 initialMarkers();
+                if (markerOptions.isEmpty()) {
+                    createMarkers();
+                }
                 //initial
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS, 15f));
 //                map.animateCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS,15));
@@ -182,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMapView.onLowMemory();
     }
 
-    private void initialMarkers() {
+    private void createMarkers() {
         this.markers = new ArrayList<>();
         LatLng spaceNeedle = new LatLng(47.620506, -122.349277);
         LatLng amazonSpheres = new LatLng(47.615556, -122.339444);
@@ -245,8 +262,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void savePath() {
-        reference.child("paths").setValue(mMapView.getmPathPoints());
+    private void initialMarkers() {
+        markerOptions = new ArrayList<>();
+        mDatabase.showMarkers(username, markerOptions, new MarkerCallBack() {
+            @Override
+            public void onCallBack(List<MarkerOptions> markerOpts) {
+                for (MarkerOptions markerOption : markerOpts) {
+                    markerOption.icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_wood_logs));
+                    map.addMarker(markerOption);
+                }
+            }
+        });
     }
 
     private void readChanges() {
@@ -285,6 +311,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Toast.makeText(this, "No location", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void savePath() {
+        reference.child("paths").setValue(mMapView.getmPathPoints());
+    }
+
+    private void saveMarkers(List<Marker> markers) {
+        reference.child("markers").setValue(markers);
     }
 
     private void saveLocation(Location location) {
@@ -349,4 +383,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 marker.setVisible(true);
         };
     }
+
+//    private void displayPastMarker(List<Marker> markers) {
+//        for (Marker marker : markers) {
+//            if (marker.id
+//        }
+//    }
 }
