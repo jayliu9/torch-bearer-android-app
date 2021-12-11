@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     isOn = false;
                     savePath();
 //                    resetPolyline();
-                    initTransparentLine();
+//                    initTransparentLine();
                     mMapView.resetLine();
                 }
             }
@@ -213,9 +213,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void savePath() {
-        int currNum = user.getNumOfPath();
+//        int currNum = user.getNumOfPath();
         reference.child("paths").setValue(mMapView.getmPathPoints());
-        reference.child("numOfPath").setValue(currNum + 1);
+//        reference.child("numOfPath").setValue(currNum + 1);
     }
 
     private void initializeDb() {
@@ -354,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mDatabase.showTransLine(username, transparentLines, new TransparentLineCallBack() {
             @Override
             public void onCallBack(List<List<LatLng>> paths) {
-                mMapView.setPathPoints(transparentLines);
+                mMapView.setPathPoints(paths);
             }
         });
     }

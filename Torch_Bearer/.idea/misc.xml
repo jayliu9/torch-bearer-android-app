@@ -5,6 +5,8 @@
       <map>
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/btn_state.xml" value="0.5388888888888889" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/custom_cardview.xml" value="0.5388888888888889" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/custom_edit_button.xml" value="0.42824074074074076" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/custom_logout_button.xml" value="0.42824074074074076" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/edit_profile_button.xml" value="0.5388888888888889" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_achieved.xml" value="0.2972222222222222" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_achievement_achieved.xml" value="0.39351851851851855" />
@@ -26,6 +28,7 @@
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_profile.xml" value="0.5" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/fragment_achievable.xml" value="0.3859375" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/fragment_achieved.xml" value="0.4583333333333333" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/progress.xml" value="0.1875" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/menu/achievement_menu.xml" value="0.38385416666666666" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.4744791666666667" />
       </map>

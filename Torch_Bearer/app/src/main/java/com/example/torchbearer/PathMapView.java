@@ -117,7 +117,6 @@ public class PathMapView extends MapView implements OnMapReadyCallback {
 
         mPathPoints = new ArrayList<>();
         mPathPoints.add(new ArrayList<>());
-
     }
 
     @Override

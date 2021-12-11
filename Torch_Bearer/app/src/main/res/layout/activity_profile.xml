@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="200dp"
         android:padding="20dp"
         android:background="#97f4f3">
         <de.hdodenhof.circleimageview.CircleImageView
@@ -17,7 +17,7 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:src="@drawable/black_profile"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="20dp"
             android:layout_centerHorizontal="true"/>
 
         <ImageView
@@ -30,16 +30,16 @@
             android:layout_toEndOf="@+id/imageview_profile"
             android:src="@drawable/ic_edit" />
 
-        <TextView
-            android:id="@+id/textview_profile_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Name"
-            android:layout_marginTop="20dp"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:layout_below="@+id/imageview_profile"
-            android:layout_centerHorizontal="true"/>
+<!--        <TextView-->
+<!--            android:id="@+id/textview_profile_name"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Name"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textSize="20sp"-->
+<!--            android:layout_below="@+id/imageview_profile"-->
+<!--            android:layout_centerHorizontal="true"/>-->
     </RelativeLayout>
 
     <LinearLayout
@@ -75,7 +75,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp">
+        android:padding="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
 
         <TextView
             android:layout_width="match_parent"
@@ -89,12 +91,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
-        android:padding="20dp">
+        android:padding="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Password: "
+            android:text="Phone: "
+            android:textSize="15sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:padding="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email: "
             android:textSize="15sp"/>
 
     </LinearLayout>
@@ -102,7 +122,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="30dp">
+        android:padding="10dp">
 
         <Button
             android:id="@+id/button_edit_profile"
@@ -111,11 +131,26 @@
             android:layout_centerHorizontal="true"
             android:background="@drawable/custom_edit_button"
             android:backgroundTint="@null"
-            app:backgroundTint="@null"
             android:text="EDIT PROFILE"
-            android:textColor="#97f4f3" />
+            android:textColor="#97f4f3"
+            app:backgroundTint="@null" />
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
 
+        <Button
+            android:id="@+id/button_profile_logout"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/custom_logout_button"
+            android:backgroundTint="@null"
+            android:text="LOGOUT"
+            android:textColor="#fb8989"
+            app:backgroundTint="@null" />
+    </RelativeLayout>
 
 </LinearLayout>

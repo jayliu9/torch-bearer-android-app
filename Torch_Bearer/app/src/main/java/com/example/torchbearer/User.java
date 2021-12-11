@@ -14,6 +14,8 @@ public class User implements Serializable {
     private MyLocation location;
     private String token;
     private int numOfPath;
+    private double totalLength;
+    private int logCount;
 
     public User() {
         this.paths = new ArrayList<>();
@@ -92,5 +94,21 @@ public class User implements Serializable {
 
     public void pathIncrease() {
         this.numOfPath++;
+    }
+
+    public double getTotalLength() {
+        return totalLength;
+    }
+
+    public void setTotalLength(double totalLength) {
+        this.totalLength = totalLength;
+    }
+
+    public int getLogCount() {
+        return logCount;
+    }
+
+    public void setLogCount(int logCount) {
+        this.logCount = logCount;
     }
 }
