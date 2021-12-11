@@ -258,7 +258,7 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
     }
 
     public void backToMainActivity(View view) {
-        startActivity(new Intent(ViewPhotosAtLocationActivity.this, MainActivity.class));
+        startActivity(new Intent(ViewPhotosAtLocationActivity.this, MapActivity.class));
     }
 
     public void showMyPhotoOnly(View view) {

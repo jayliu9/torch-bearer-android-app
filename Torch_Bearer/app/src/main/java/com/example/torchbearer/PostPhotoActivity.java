@@ -217,6 +217,6 @@ public class PostPhotoActivity extends AppCompatActivity {
     }
 
     public void backToMainActivity(View view) {
-        startActivity(new Intent(PostPhotoActivity.this, MainActivity.class));
+        startActivity(new Intent(PostPhotoActivity.this, MapActivity.class));
     }
 }
