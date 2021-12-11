@@ -43,8 +43,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if (remoteMessage.getData().size() > 0) {
             RemoteMessage.Notification notification = remoteMessage.getNotification();
-            String achievement = remoteMessage.getData().get("achievement");
-            showNotification(notification, achievement);
+            showNotification(notification);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 @Override
@@ -64,7 +63,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
      *
      * @param remoteMessageNotification FCM message  received.
      */
-    private void showNotification(RemoteMessage.Notification remoteMessageNotification, String achievement) {
+    private void showNotification(RemoteMessage.Notification remoteMessageNotification) {
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -91,7 +90,6 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         notification = builder.setContentTitle(remoteMessageNotification.getTitle())
                 .setContentText(remoteMessageNotification.getBody())
                 .setSmallIcon(R.mipmap.ic_launcher)
-//                .setLargeIcon(findImageId(sticker))
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
                 .build();

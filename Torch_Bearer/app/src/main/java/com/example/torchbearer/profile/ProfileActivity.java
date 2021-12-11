@@ -17,10 +17,15 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.torchbearer.MainActivity;
 import com.example.torchbearer.R;
-import com.example.torchbearer.RuntimeDatabase;
+import com.example.torchbearer.RealtimeDatabase;
+import com.example.torchbearer.User;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,8 +33,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -43,21 +49,55 @@ public class ProfileActivity extends AppCompatActivity {
     private Uri imageUri;
     private Button editProfileButton;
     private Button logoutButton;
-    private String userID;
-    private RuntimeDatabase mDatabase;
+    private RealtimeDatabase mDatabase;
     private StorageReference storageReference;
     private AlertDialog dialog;
     private StorageReference imageFileReference;
     private ActivityResultLauncher<Intent> activityResultLauncher;
     private Button achievementsButton;
+    private FirebaseAuth firebaseAuth;
+    private String userId;
+
+    private static final String TAG = ProfileActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        userID = getIntent().getExtras().getString("userID");
-        mDatabase = new RuntimeDatabase(this);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        userId = firebaseAuth.getCurrentUser().getUid();
+
+        TextView usernameTxt = findViewById(R.id.username);
+        TextView phoneTxt = findViewById(R.id.phone);
+        TextView emailTxt = findViewById(R.id.email);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(userId);
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                if (user.getUsername() != null) {
+                    usernameTxt.setText("UserName: " + user.getUsername());
+                }
+                if (user.getPhoneNum() != null) {
+                    phoneTxt.setText("PhoneNumber: " + user.getPhoneNum());
+                }
+                if (user.getEmail() != null) {
+                    emailTxt.setText("Email: " + user.getEmail());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+        mDatabase = new RealtimeDatabase(this);
         storageReference = FirebaseStorage.getInstance().getReference();
-        imageFileReference = storageReference.child("ProfileImages").child(userID);
+        imageFileReference = storageReference.child("ProfileImages").child(userId);
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts
                 .StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
@@ -125,7 +165,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setInitImage() {
-        mDatabase.getChildReference(userID).child("ProfileImageUrl").addValueEventListener(new ValueEventListener() {
+        mDatabase.getChildReference(userId).child("ProfileImageUrl").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String url = snapshot.getValue(String.class);
@@ -145,10 +185,6 @@ public class ProfileActivity extends AppCompatActivity {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(imageUri));
     }
 
-    private void logout() {
-        FirebaseAuth.getInstance().signOut();
-        //startActivity(new Intent(this, LoginActivity.class));
-    }
 
     private void startEditProfileActivity() {
         startActivity(new Intent(this, EditProfileActivity.class));
@@ -160,8 +196,6 @@ public class ProfileActivity extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         activityResultLauncher.launch(intent);
     }
-
-
 
     private void uploadImage() {
         if (imageUri != null) {
@@ -175,7 +209,7 @@ public class ProfileActivity extends AppCompatActivity {
                             imageFileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(@NonNull Uri uri) {
-                                    mDatabase.getChildReference(userID).child("ProfileImageUrl").setValue(uri.toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    mDatabase.getChildReference(userId).child("ProfileImageUrl").setValue(uri.toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if(task.isSuccessful()) {
@@ -206,5 +240,23 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void logout() {
+        FirebaseAuth.getInstance().signOut();
+
+        GoogleSignIn.getClient(this, new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()).signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(ProfileActivity.this, "Signout Failed.", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
     }
 }

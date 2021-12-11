@@ -18,38 +18,38 @@
             android:hint="Username"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp">
-        <EditText
-            android:id="@+id/editText_profile_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Password"/>
-    </LinearLayout>
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:padding="20dp">-->
-<!--        <EditText-->
-<!--            android:id="@+id/editText_profile_phone"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:hint="Phone"/>-->
-<!--    </LinearLayout>-->
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:padding="20dp">-->
+    <!--        <EditText-->
+    <!--            android:id="@+id/editText_profile_password"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:hint="Password"/>-->
+    <!--    </LinearLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20dp">
         <EditText
-            android:id="@+id/editText_profile_email"
+            android:id="@+id/editText_profile_phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"/>
+            android:hint="Phone"/>
     </LinearLayout>
+
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:padding="20dp">-->
+    <!--        <EditText-->
+    <!--            android:id="@+id/editText_profile_email"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:hint="Email"/>-->
+    <!--    </LinearLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,6 +63,7 @@
             android:backgroundTint="@null"
             app:backgroundTint="@null"
             android:textColor="#97f4f3"
+            android:onClick="updateProfile"
             />
     </LinearLayout>
 

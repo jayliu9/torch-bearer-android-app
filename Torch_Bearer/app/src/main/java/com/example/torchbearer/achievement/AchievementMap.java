@@ -1,17 +1,15 @@
 package com.example.torchbearer.achievement;
 
 import com.example.torchbearer.User;
-
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 
 public class AchievementMap {
+
     private Map<String, Achievement> map;
+    private String userToken;
     public AchievementMap () {
         createAchievementMap();
     }
@@ -53,7 +51,6 @@ public class AchievementMap {
             achievedMap.put(achievement.getTitle(), achievement);
         }
     }
-
     public Map<String, Achievement> getMap() {
         return map;
     }

@@ -81,10 +81,11 @@
         android:layout_marginEnd="20dp">
 
         <TextView
+            android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Username: "
-            android:textSize="15sp"/>
+            android:textSize="15sp" />
 
     </LinearLayout>
 
@@ -97,6 +98,7 @@
         android:layout_marginEnd="20dp">
 
         <TextView
+            android:id="@+id/phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Phone: "
@@ -113,6 +115,7 @@
         android:layout_marginEnd="20dp">
 
         <TextView
+            android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Email: "
