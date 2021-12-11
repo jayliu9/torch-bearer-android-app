@@ -19,6 +19,9 @@ public class User implements Serializable {
     private int numOfPath;
     private double totalLength;
     private int logCount;
+    private String userId;
+    private String email;
+    private String phoneNum;
     private List<MarkerOptions> markerOptions;
 
     public User() {
@@ -29,6 +32,23 @@ public class User implements Serializable {
 
     public User(String username) {
         this.username = username;
+        this.paths = new ArrayList<>();
+        this.numOfPath = 0;
+        this.markerOptions = new ArrayList<>();
+    }
+
+    public User(String username, String email) {
+        this.username = username;
+        this.email = email;
+        this.paths = new ArrayList<>();
+        this.numOfPath = 0;
+        this.markerOptions = new ArrayList<>();
+    }
+
+    public User(String username, String email, String phoneNum) {
+        this.username = username;
+        this.email = email;
+        this.phoneNum = phoneNum;
         this.paths = new ArrayList<>();
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
@@ -101,11 +121,6 @@ public class User implements Serializable {
         this.numOfPath = numOfPath;
     }
 
-    public void pathIncrease() {
-        this.numOfPath++;
-    }
-
-
     public double getTotalLength() {
         return totalLength;
     }
@@ -122,11 +137,35 @@ public class User implements Serializable {
         this.logCount = logCount;
     }
 
-    public List<MarkerOptions> getMarkers() {
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
+    public List<MarkerOptions> getMarkerOptions() {
         return markerOptions;
     }
 
-    public void setMarkers(List<MarkerOptions> markers) {
-        this.markerOptions = markers;
+    public void setMarkerOptions(List<MarkerOptions> markerOptions) {
+        this.markerOptions = markerOptions;
     }
 }
