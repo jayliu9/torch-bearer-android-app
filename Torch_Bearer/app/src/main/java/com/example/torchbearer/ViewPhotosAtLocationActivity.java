@@ -43,29 +43,7 @@ import java.util.List;
 
 public class ViewPhotosAtLocationActivity extends AppCompatActivity implements PhotoFragment.OnListFragmentInteractionListener{
 
-    private ActivityViewPhotosAtLocationBinding binding;
-
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        binding = ActivityViewPhotosAtLocationBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-//
-//        Toolbar toolbar = binding.toolbar;
-//        setSupportActionBar(toolbar);
-//        CollapsingToolbarLayout toolBarLayout = binding.toolbarLayout;
-//        toolBarLayout.setTitle(getTitle());
-//
-//        FloatingActionButton fab = binding.fab;
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-//    }
+//    private ActivityViewPhotosAtLocationBinding binding;
 
     private ViewPhotosAtLocationActivity context;
     private DownloadManager downloadManager;
@@ -78,6 +56,7 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
     int currentPhotoIndex;
 
     String currentLocation;
+    String currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +78,10 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
         }
 
         // TODO: replace with actual location
-        currentLocation = "seattle";
+        currentLocation = "san diego";
+        currentUser = "John Smith";
 
+        getSupportActionBar().setTitle("Posts at " + currentLocation);
         storageReference = FirebaseStorage.getInstance().getReference();
         StorageReference images = storageReference.child(currentLocation + "/");
 
@@ -114,8 +95,34 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
                         for (StorageReference prefix : listResult.getPrefixes()) {
                             // All the prefixes under listRef.
                             // You may call listAll() recursively on them.
+                            prefix.listAll()
+                                    .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                                        @Override
+                                        public void onSuccess(ListResult nestedListResult) {
+                                            for (StorageReference prefix : nestedListResult.getPrefixes()) {
+                                                // All the prefixes under listRef.
+                                                // You may call listAll() recursively on them.
+                                            }
+                                            for (StorageReference item : nestedListResult.getItems()) {
+                                                // All the items under listRef.
+                                                item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                    @Override
+                                                    public void onSuccess(Uri uri) {
+                                                        Log.i("DOWNLOAD", "Success " + uri.toString());
+                                                        uriList.add(uri);
+                                                        downloadImage(downloadManager, context, uri);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i("DOWNLOAD", "FAILED");
+                                        }
+                                    });
                         }
-
                         for (StorageReference item : listResult.getItems()) {
                             // All the items under listRef.
                             item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -127,6 +134,8 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
                                 }
                             });
                         }
+
+
 //                        Uri uri;
 //                        for (; currentPhotoIndex < uriList.size() && currentPhotoIndex < 10; currentPhotoIndex++) {
 //                            Log.i(TAG, "DOWNLOAD " + currentPhotoIndex);
@@ -138,7 +147,6 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // Uh-oh, an error occurred!
                         Log.i("DOWNLOAD", "FAILED");
                     }
                 });
@@ -146,6 +154,8 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
         progressBar = findViewById(R.id.indeterminateBar);
 
         final FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setVisibility(View.INVISIBLE);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -186,7 +196,8 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
                 PhotoContent.loadImage(new File(filePath));
                 recyclerViewAdapter.notifyItemInserted(0);
                 progressBar.setVisibility(View.GONE);
-                fab.setVisibility(View.VISIBLE);
+//                fab.setVisibility(View.VISIBLE);
+//                fab.setVisibility(View.INVISIBLE);
             }
         };
 
@@ -195,12 +206,6 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
         Uri uri;
         Log.i(TAG, "DOWNLOAD " + currentPhotoIndex);
         Log.i(TAG, "URIList " + uriList);
-
-//        for (; currentPhotoIndex < uriList.size() && currentPhotoIndex < 10; currentPhotoIndex++) {
-//            Log.i(TAG, "DOWNLOAD " + currentPhotoIndex);
-//            uri = uriList.get(currentPhotoIndex);
-//            downloadImage(downloadManager, context, uri);
-//        }
     }
 
     @Override
@@ -242,20 +247,81 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
 //                loadSavedImages(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
                 PhotoContent.ITEMS.clear();
                 deleteSavedImages(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS));
-
-//                Uri uri = null;
-//                for (; currentPhotoIndex < uriList.size() && currentPhotoIndex < 10; currentPhotoIndex++) {
-//                    uri = uriList.get(currentPhotoIndex);
-//                    downloadImage(downloadManager, context, uri);
-//                }
                 recyclerViewAdapter.notifyDataSetChanged();
             }
         });
     }
 
-
     @Override
     public void onListFragmentInteraction(PhotoItem item) {
         // This is where you'd handle clicking an item in the list
+    }
+
+    public void backToMainActivity(View view) {
+        startActivity(new Intent(ViewPhotosAtLocationActivity.this, MainActivity.class));
+    }
+
+    public void showMyPhotoOnly(View view) {
+        StorageReference images = storageReference.child(currentLocation + "/" + currentUser + "/");
+//        progressBar.setVisibility(View.VISIBLE);
+        PhotoContent.ITEMS.clear();
+        images.listAll()
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+                        for (StorageReference prefix : listResult.getPrefixes()) {
+                            // All the prefixes under listRef.
+                            // You may call listAll() recursively on them.
+                            prefix.listAll()
+                                    .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                                        @Override
+                                        public void onSuccess(ListResult nestedListResult) {
+                                            for (StorageReference prefix : nestedListResult.getPrefixes()) {
+                                                // All the prefixes under listRef.
+                                                // You may call listAll() recursively on them.
+                                            }
+                                            for (StorageReference item : nestedListResult.getItems()) {
+                                                // All the items under listRef.
+                                                item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                    @Override
+                                                    public void onSuccess(Uri uri) {
+                                                        Log.i("DOWNLOAD", "Success " + uri.toString());
+                                                        uriList.add(uri);
+                                                        downloadImage(downloadManager, context, uri);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.i("DOWNLOAD", "FAILED");
+                                        }
+                                    });
+                        }
+                        for (StorageReference item : listResult.getItems()) {
+                            // All the items under listRef.
+                            item.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    Log.i("DOWNLOAD", "Success " + uri.toString());
+                                    uriList.add(uri);
+                                    downloadImage(downloadManager, context, uri);
+                                }
+                            });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("DOWNLOAD", "FAILED");
+                    }
+                });
+
+        recyclerViewAdapter.notifyDataSetChanged();
+        progressBar.setVisibility(View.GONE);
+//        fab.setVisibility(View.VISIBLE);
     }
 }

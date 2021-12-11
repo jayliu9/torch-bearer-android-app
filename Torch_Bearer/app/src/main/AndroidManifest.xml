@@ -17,7 +17,7 @@
         <activity
             android:name=".ViewPhotosAtLocationActivity"
             android:exported="false"
-            android:label="@string/title_activity_view_photos_at_location"
+            android:label="View at SF"
             android:theme="@style/Theme.TorchBearer.NoActionBar" />
         <activity
             android:name=".PostPhotoActivity"

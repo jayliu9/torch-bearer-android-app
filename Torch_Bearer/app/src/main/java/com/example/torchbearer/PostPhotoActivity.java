@@ -47,6 +47,7 @@ public class PostPhotoActivity extends AppCompatActivity {
     String currentPhotoFileName;
     Uri currentPhotoURI;
     String currentLocation;
+    String currentUser;
 
     StorageReference storageReference;
 
@@ -61,9 +62,11 @@ public class PostPhotoActivity extends AppCompatActivity {
         postButton = findViewById(R.id.post);
 
         postButton.setEnabled(false);
+        postButton.setText("Post");
 
         // TODO: replace with real location
-        currentLocation = "seattle";
+        currentLocation = "san diego";
+        currentUser = "John Smith";
 
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -72,6 +75,7 @@ public class PostPhotoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 getCamearaPermission();
                 dispatchTakePictureIntent();
+                postButton.setText("Post");
             }
         });
 
@@ -80,7 +84,7 @@ public class PostPhotoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(gallery, GALLERY_REQUEST_CODE);
-
+                postButton.setText("Post");
             }
         });
 
@@ -88,7 +92,6 @@ public class PostPhotoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 uploadToFirebase(currentPhotoFileName, currentPhotoURI);
-
             }
         });
     }
@@ -103,12 +106,6 @@ public class PostPhotoActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-//        File storageDir = Environment.getExternalStorageDirectory();
-//        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-//        File storageDir = Environment.getExternalStorageDirectory();
-//        storageDir.mkdirs();
-
-//        File storageDir = Environment.getExternalStoragePublicDirectory("Test");
 
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
@@ -117,7 +114,6 @@ public class PostPhotoActivity extends AppCompatActivity {
         );
         currentPhotoFileName = imageFileName + ".jpg";
 
-//        File image = new File(storageDir, imageFileName + ".jpg");
         Log.i(TAG, image.getAbsolutePath());
 
         // Save a file: path for use with ACTION_VIEW intents
@@ -127,31 +123,23 @@ public class PostPhotoActivity extends AppCompatActivity {
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                Log.i(TAG, "Creating impage");
+        File photoFile = null;
+        try {
+            Log.i(TAG, "Creating impage");
 
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-                Log.d(TAG, "Error: " + ex);
-
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.torchbearer.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
-            }
-//        } else {
-//            Log.d(LOG_TAG, "Error: " + "sth wrong");
-//
-//        }
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+            // Error occurred while creating the File
+            Log.d(TAG, "Error: " + ex);
+        }
+        // Continue only if the File was successfully created
+        if (photoFile != null) {
+            Uri photoURI = FileProvider.getUriForFile(this,
+                    "com.example.torchbearer.android.fileprovider",
+                    photoFile);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+        }
     }
 
     private void galleryAddPic() {
@@ -166,28 +154,21 @@ public class PostPhotoActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST_CODE) {
-            //&& data.getExtras() != null
-
             if (resultCode == Activity.RESULT_OK) {
                 File f = new File(currentPhotoPath);
                 currentPhotoURI = Uri.fromFile(f);
                 imageSelected.setImageURI(currentPhotoURI);
 
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//                File f = new File(currentPhotoPath);
                 Uri contentUri = Uri.fromFile(f);
                 mediaScanIntent.setData(contentUri);
                 this.sendBroadcast(mediaScanIntent);
 
                 postButton.setEnabled(true);
             }
-//            Bitmap image = (Bitmap) data.getExtras().get("data");
-//            imageSelected.setImageBitmap(image);
         }
 
         if (requestCode == GALLERY_REQUEST_CODE) {
-            //&& data.getExtras() != null
-
             if (resultCode == Activity.RESULT_OK) {
                 Uri contentUri = data.getData();
                 currentPhotoURI = contentUri;
@@ -197,21 +178,12 @@ public class PostPhotoActivity extends AppCompatActivity {
 
                 currentPhotoFileName = imageFileName;
 
-                Log.i(TAG, "Chossing " + imageFileName);
+                Log.i(TAG, "Choosing " + imageFileName);
 
-//                File f = new File(currentPhotoPath);
                 imageSelected.setImageURI(contentUri);
-
-//                Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-////                File f = new File(currentPhotoPath);
-//                Uri contentUri = Uri.fromFile(f);
-//                mediaScanIntent.setData(contentUri);
-//                this.sendBroadcast(mediaScanIntent);
                 postButton.setEnabled(true);
 
             }
-//            Bitmap image = (Bitmap) data.getExtras().get("data");
-//            imageSelected.setImageBitmap(image);
         }
     }
 
@@ -222,23 +194,18 @@ public class PostPhotoActivity extends AppCompatActivity {
     }
 
     private void uploadToFirebase(String fileName, Uri uri) {
-        StorageReference image = storageReference.child(currentLocation + "/" + fileName);
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        StorageReference image = storageReference.child(currentLocation + "/" + currentUser + "/" + timeStamp + ".jpg");
 
-//// Create a reference to 'images/mountains.jpg'
-//        StorageReference mountainImagesRef = storageRef.child("images/mountains.jpg");
-//
-//// While the file names are the same, the references point to different files
-//        mountainsRef.getName().equals(mountainImagesRef.getName());    // true
         image.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(PostPhotoActivity.this, "Photo Posted Successfully!", Toast.LENGTH_SHORT).show();
-
+                postButton.setText("Photo Posted!");
                 postButton.setEnabled(false);
-                imageSelected.setImageResource(android.R.color.transparent);
+//                imageSelected.setImageResource(android.R.color.transparent);
 
+                Toast.makeText(PostPhotoActivity.this, "Photo Posted!", Toast.LENGTH_SHORT).show();
 
-//                imageSelected.cl
                 image.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
@@ -247,5 +214,9 @@ public class PostPhotoActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    public void backToMainActivity(View view) {
+        startActivity(new Intent(PostPhotoActivity.this, MainActivity.class));
     }
 }

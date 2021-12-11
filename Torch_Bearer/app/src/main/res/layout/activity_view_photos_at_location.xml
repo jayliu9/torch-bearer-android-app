@@ -36,6 +36,34 @@
 
     <include layout="@layout/content_scrolling" />
 
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:onClick="backToMainActivity"
+            android:text="GO Back"
+            app:layout_anchor="@id/app_bar"
+            app:layout_anchorGravity="bottom|left" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:onClick="showMyPhotoOnly"
+        android:text="My Posts Only"
+        app:layout_anchor="@id/app_bar"
+        app:layout_anchorGravity="bottom|center" />
+<!--    <ImageButton-->
+<!--        android:id="@+id/back"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginEnd="@dimen/fab_margin"-->
+<!--        app:layout_anchor="@id/app_bar"-->
+<!--        app:layout_anchorGravity="bottom|left"-->
+<!--        app:srcCompat="@drawable/back" />-->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
