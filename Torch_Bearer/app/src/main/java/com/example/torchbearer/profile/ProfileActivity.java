@@ -35,9 +35,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-
-import java.io.File;
-import java.io.IOException;
+import com.example.torchbearer.achievement.AchievementActivity;
 
 public class ProfileActivity extends AppCompatActivity {
     private ImageView profileImage;
@@ -51,6 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
     private AlertDialog dialog;
     private StorageReference imageFileReference;
     private ActivityResultLauncher<Intent> activityResultLauncher;
+    private Button achievementsButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +104,18 @@ public class ProfileActivity extends AppCompatActivity {
 //        builder.setCancelable(false);
         builder.setView(R.layout.progress);
         dialog = builder.create();
+        achievementsButton = findViewById(R.id.achievements_button);
+        achievementsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startAchievementsActivity();
+            }
+        });
+    }
+
+    private void startAchievementsActivity() {
+        Intent intent = new Intent(this, AchievementActivity.class);
+        startActivity(intent);
     }
 
     @Override
