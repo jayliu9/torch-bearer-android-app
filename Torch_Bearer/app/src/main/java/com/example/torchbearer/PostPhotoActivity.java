@@ -64,7 +64,7 @@ public class PostPhotoActivity extends AppCompatActivity {
         postButton.setEnabled(false);
         postButton.setText("Post");
 
-        // TODO: replace with real location
+        // TODO: replace with real location and user
         currentLocation = "san diego";
         currentUser = "John Smith";
 
@@ -200,7 +200,7 @@ public class PostPhotoActivity extends AppCompatActivity {
         image.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                postButton.setText("Photo Posted!");
+                postButton.setText("Posted!!");
                 postButton.setEnabled(false);
 //                imageSelected.setImageResource(android.R.color.transparent);
 

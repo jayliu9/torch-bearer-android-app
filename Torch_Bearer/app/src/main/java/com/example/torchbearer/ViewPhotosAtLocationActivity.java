@@ -77,7 +77,7 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
             recyclerView.addItemDecoration(dividerItemDecoration);
         }
 
-        // TODO: replace with actual location
+        // TODO: replace with actual location and user
         currentLocation = "san diego";
         currentUser = "John Smith";
 
