@@ -32,7 +32,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.torchbearer.databinding.ActivityViewPhotosAtLocationBinding;
+//import com.example.torchbearer.databinding.ActivityViewPhotosAtLocationBinding;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;

@@ -1,5 +1,18 @@
 package com.example.torchbearer.profile;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.webkit.MimeTypeMap;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -7,27 +20,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.torchbearer.DashboardActivity;
 import com.example.torchbearer.MainActivity;
 import com.example.torchbearer.R;
-import com.example.torchbearer.RuntimeDatabase;
+import com.example.torchbearer.RealtimeDatabase;
 import com.example.torchbearer.User;
+import com.example.torchbearer.achievement.AchievementActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,23 +32,16 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProfileActivity extends AppCompatActivity {
     private ImageView profileImage;
@@ -59,23 +49,21 @@ public class ProfileActivity extends AppCompatActivity {
     private Uri imageUri;
     private Button editProfileButton;
     private Button logoutButton;
-    private RuntimeDatabase mDatabase;
+    private RealtimeDatabase mDatabase;
     private StorageReference storageReference;
     private AlertDialog dialog;
     private StorageReference imageFileReference;
     private ActivityResultLauncher<Intent> activityResultLauncher;
-
+    private Button achievementsButton;
     private FirebaseAuth firebaseAuth;
     private String userId;
 
     private static final String TAG = ProfileActivity.class.getSimpleName();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
 
         firebaseAuth = FirebaseAuth.getInstance();
         userId = firebaseAuth.getCurrentUser().getUid();
@@ -107,7 +95,7 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
 
-        mDatabase = new RuntimeDatabase(this);
+        mDatabase = new RealtimeDatabase(this);
         storageReference = FirebaseStorage.getInstance().getReference();
         imageFileReference = storageReference.child("ProfileImages").child(userId);
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts
@@ -156,6 +144,18 @@ public class ProfileActivity extends AppCompatActivity {
 //        builder.setCancelable(false);
         builder.setView(R.layout.progress);
         dialog = builder.create();
+        achievementsButton = findViewById(R.id.achievements_button);
+        achievementsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startAchievementsActivity();
+            }
+        });
+    }
+
+    private void startAchievementsActivity() {
+        Intent intent = new Intent(this, AchievementActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -185,10 +185,6 @@ public class ProfileActivity extends AppCompatActivity {
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(imageUri));
     }
 
-//    private void logout() {
-//        FirebaseAuth.getInstance().signOut();
-//        //startActivity(new Intent(this, LoginActivity.class));
-//    }
 
     private void startEditProfileActivity() {
         startActivity(new Intent(this, EditProfileActivity.class));
@@ -200,8 +196,6 @@ public class ProfileActivity extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         activityResultLauncher.launch(intent);
     }
-
-
 
     private void uploadImage() {
         if (imageUri != null) {
@@ -248,7 +242,6 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-
     public void logout() {
         FirebaseAuth.getInstance().signOut();
 
@@ -265,6 +258,5 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        finish();
     }
 }

@@ -3,19 +3,6 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_main.xml" value="0.3401268115942029" />
-        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.521875" />
-        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.521875" />
-        <entry key="app/src/main/res/layout-w1240dp/content_scrolling.xml" value="0.21485943775100402" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.3342391304347826" />
-        <entry key="app/src/main/res/layout/activity_photo_video_sharing.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_post_photo.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_view_photos.xml" value="0.3134057971014493" />
-        <entry key="app/src/main/res/layout/activity_view_photos_at_location.xml" value="0.3134057971014493" />
-        <entry key="app/src/main/res/layout/content_scrolling.xml" value="0.3134057971014493" />
-        <entry key="app/src/main/res/layout/fragment_item.xml" value="0.3134057971014493" />
-        <entry key="app/src/main/res/layout/fragment_item_list.xml" value="0.3134057971014493" />
-        <entry key="app/src/main/res/xml/file_paths.xml" value="0.3170289855072464" />
         <entry key="../../../../../layout/custom_preview.xml" value="0.4064814814814815" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/btn_state.xml" value="0.5388888888888889" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/custom_cardview.xml" value="0.5388888888888889" />
@@ -48,11 +35,14 @@
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/progress.xml" value="0.1875" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/menu/achievement_menu.xml" value="0.38385416666666666" />
         <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.4744791666666667" />
+        <entry key="app/src/main/res/drawable/gradient.xml" value="0.18981481481481483" />
         <entry key="app/src/main/res/layout/activity_anthentication.xml" value="0.33229166666666665" />
         <entry key="app/src/main/res/layout/activity_edit_profile.xml" value="0.44006725359178056" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.3328125" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33229166666666665" />
         <entry key="app/src/main/res/layout/activity_map.xml" value="0.33229166666666665" />
         <entry key="app/src/main/res/layout/activity_profile.xml" value="0.33229166666666665" />
+        <entry key="app/src/main/res/layout/activity_register.xml" value="0.3328125" />
       </map>
     </option>
   </component>

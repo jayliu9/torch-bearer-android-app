@@ -30,16 +30,16 @@
             android:layout_toEndOf="@+id/imageview_profile"
             android:src="@drawable/ic_edit" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/textview_profile_name"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Name"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:textSize="20sp"-->
-<!--            android:layout_below="@+id/imageview_profile"-->
-<!--            android:layout_centerHorizontal="true"/>-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/textview_profile_name"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="Name"-->
+        <!--            android:layout_marginTop="20dp"-->
+        <!--            android:textStyle="bold"-->
+        <!--            android:textSize="20sp"-->
+        <!--            android:layout_below="@+id/imageview_profile"-->
+        <!--            android:layout_centerHorizontal="true"/>-->
     </RelativeLayout>
 
     <LinearLayout
@@ -55,10 +55,11 @@
             app:backgroundTint="@null"
             android:text="GALLERY"
             android:drawableTop="@drawable/ic_gallery_24"
-            android:textColor="#97f4f3"
+            android:textColor="#88000000"
             android:layout_marginRight="10dp"/>
 
         <Button
+            android:id="@+id/achievements_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -67,7 +68,7 @@
             app:backgroundTint="@null"
             android:text="Achievements"
             android:drawableTop="@drawable/ic_achievement_badge_24"
-            android:textColor="#97f4f3"
+            android:textColor="#88000000"
             android:layout_marginLeft="10dp"/>
 
     </LinearLayout>
@@ -135,7 +136,7 @@
             android:background="@drawable/custom_edit_button"
             android:backgroundTint="@null"
             android:text="EDIT PROFILE"
-            android:textColor="#97f4f3"
+            android:textColor="#88000000"
             app:backgroundTint="@null" />
     </RelativeLayout>
 
@@ -152,7 +153,7 @@
             android:background="@drawable/custom_logout_button"
             android:backgroundTint="@null"
             android:text="LOGOUT"
-            android:textColor="#fb8989"
+            android:textColor="#88000000"
             app:backgroundTint="@null" />
     </RelativeLayout>
 

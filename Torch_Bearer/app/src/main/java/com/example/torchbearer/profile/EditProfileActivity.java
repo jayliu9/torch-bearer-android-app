@@ -1,14 +1,13 @@
 package com.example.torchbearer.profile;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.torchbearer.R;
 import com.example.torchbearer.RealtimeDatabase;
-
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -41,7 +40,11 @@ public class EditProfileActivity extends AppCompatActivity {
         String usernameStr = username.getText().toString();
         String phoneNumStr = phone.getText().toString();
 
-        db.onUpdateUsername(userId, usernameStr);
-        db.onUpdateUserPhoneNum(userId, phoneNumStr);
+        if (!usernameStr.equals("")) {
+            db.onUpdateUsername(userId, usernameStr);
+        }
+        if (!phoneNumStr.equals("")) {
+            db.onUpdateUserPhoneNum(userId, phoneNumStr);
+        }
     }
 }
