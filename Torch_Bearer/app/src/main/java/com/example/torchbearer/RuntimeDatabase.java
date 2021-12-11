@@ -66,7 +66,7 @@ public class RuntimeDatabase {
     }
 
 
-    public void showTransLine(String username, List<List<LatLng>> paths, TransparentLineCallBack myCallBack) {
+    public void showTransparentLine(String username, List<List<LatLng>> paths, TransparentLineCallBack myCallBack) {
         getChildReference(username).child("paths").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

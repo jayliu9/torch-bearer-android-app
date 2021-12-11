@@ -65,9 +65,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private DatabaseReference reference;
     private LocationManager manager;
-    private Polyline gpsTrack;
 
-    private List<PolylineOptions> pathOptions;
     private User user;
     private String username;
     private final int MIN_TIME = 500;
@@ -76,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RuntimeDatabase mDatabase;
 
     private Marker myMaker;
+    private List<Marker> markers;
 
     //squar
 
@@ -98,28 +97,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 } else {
                     isOn = false;
                     savePath();
-//                    resetPolyline();
                     mMapView.resetLine();
                 }
             }
         });
-//
-//        initializeDb();
-//        //user = new User("User-101");
-//        //reference = mDatabase.getChildReference("User-101");
-//        initializeCurrentUser("User-101");
-//        reference = mDatabase.getChildReference("User-101");
-//        username = "User-101";
-//        //reference = FirebaseDatabase.getInstance().getReference().child("User-101");
-//        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-//        //FirebaseDatabase.getInstance().getReference().setValue("This is Torch Bearer");
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(this);
-//        getLocationUpdate();
-//
-//        readChanges();
-
         //Squar
 
         Bundle mapViewBundle = null;
@@ -144,16 +125,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker")
                         .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
 
-                PolylineOptions polylineOptions = new PolylineOptions();
-                polylineOptions.color(Color.RED);
-                polylineOptions.width(4);
-                gpsTrack = map.addPolyline(polylineOptions);
+                initialMarkers();
                 //initial
-                map.animateCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS,15));
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS, 15f));
+//                map.animateCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS,15));
                 initTransparentLine();
             }
         });
-
         getLocationUpdate();
         readChanges();
 
@@ -204,21 +182,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMapView.onLowMemory();
     }
 
-    private void resetPolyline() {
-        PolylineOptions polylineOptions = new PolylineOptions();
-        polylineOptions.color(Color.RED);
-        polylineOptions.width(4);
-        gpsTrack = map.addPolyline(polylineOptions);
-    }
+    private void initialMarkers() {
+        this.markers = new ArrayList<>();
+        LatLng spaceNeedle = new LatLng(47.620506, -122.349277);
+        LatLng amazonSpheres = new LatLng(47.615556, -122.339444);
 
-    private void savePath() {
-        reference.child("paths").setValue(mMapView.getmPathPoints());
+        Marker mark1 = map.addMarker(new MarkerOptions().position(spaceNeedle).title("Space Needles")
+                .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_wood_logs)));
+        mark1.setVisible(false);
+        markers.add(mark1);
+
+        Marker mark2 = map.addMarker(new MarkerOptions().position(amazonSpheres).title("Amazon Spheres")
+                .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_wood_logs)));
+        mark2.setVisible(false);
+        markers.add(mark2);
     }
 
     private void initializeDb() {
         mDatabase = new RuntimeDatabase(MainActivity.this);
     }
-
 
     private void initializeCurrentUser(String usernameInput) {
         Bundle extras = getIntent().getExtras();
@@ -253,6 +235,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        mDatabase.createUser(username);
     }
 
+    private void initTransparentLine() {
+        transparentLines = new ArrayList<>();
+        mDatabase.showTransparentLine(username, transparentLines, new TransparentLineCallBack() {
+            @Override
+            public void onCallBack(List<List<LatLng>> paths) {
+                mMapView.setPathPoints(paths);
+            }
+        });
+    }
+
+    private void savePath() {
+        reference.child("paths").setValue(mMapView.getmPathPoints());
+    }
 
     private void readChanges() {
         reference.child("location").addValueEventListener(new ValueEventListener() {
@@ -277,6 +272,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        if (location != null) {
+            saveLocation(location);
+            if (isOn) {
+                updateTrack(location);
+                checkMarkersDistance(50);
+            }
+            map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+        } else {
+            Toast.makeText(this, "No location", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void saveLocation(Location location) {
+        reference.child("location").setValue(location);
+    }
+
+    private void updateTrack(Location location) {
+        mMapView.addPoint(new LatLng(location.getLatitude(), location.getLongitude()));
+    }
 
     private void getLocationUpdate() {
         if (manager != null) {
@@ -311,37 +328,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-        map = googleMap;
 
-        LatLng seattle = new LatLng(47.99728191304702, -122.1898995151709677);
-        myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker")
-                .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
-        map.getUiSettings().setZoomControlsEnabled(true);
-        map.getUiSettings().setAllGesturesEnabled(true);
-        map.getUiSettings().setMyLocationButtonEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(seattle, 15.0f));
-
-        PolylineOptions polylineOptions = new PolylineOptions();
-        polylineOptions.color(Color.RED);
-        polylineOptions.width(4);
-        gpsTrack = map.addPolyline(polylineOptions);
-
-
-        map.moveCamera(CameraUpdateFactory.newCameraPosition(
-                CameraPosition.fromLatLngZoom(new LatLng(47, -122), 15)));
     }
-
-
-    private void initTransparentLine() {
-        transparentLines = new ArrayList<>();
-        mDatabase.showTransLine(username, transparentLines, new TransparentLineCallBack() {
-            @Override
-            public void onCallBack(List<List<LatLng>> paths) {
-                mMapView.setPathPoints(paths);
-            }
-        });
-    }
-
 
     private BitmapDescriptor BitMapFromVector(Context applicationContext, int ic_torch) {
         Drawable vectorDrawable = ContextCompat.getDrawable(applicationContext, ic_torch);
@@ -352,27 +340,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        if (location != null) {
-            saveLocation(location);
-            if (isOn)
-                updateTrack(location);
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15f));
-        } else {
-            Toast.makeText(this, "No location", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    private void saveLocation(Location location) {
-        reference.child("location").setValue(location);
-    }
-
-    private void updateTrack(Location location) {
-        mMapView.addPoint(new LatLng(location.getLatitude(), location.getLongitude()));
-
-//        circle = drawCircle(new LatLng(location.getLatitude(), location.getLongitude()));
-
+    private void checkMarkersDistance(double radius) {
+        for (Marker marker : this.markers) {
+            LatLng markerLatLng = marker.getPosition();
+            float result[] = new float[1];
+            Location.distanceBetween(myMaker.getPosition().latitude, myMaker.getPosition().longitude, markerLatLng.latitude, markerLatLng.longitude, result);
+            if (result[0] < radius)
+                marker.setVisible(true);
+        };
     }
 }
