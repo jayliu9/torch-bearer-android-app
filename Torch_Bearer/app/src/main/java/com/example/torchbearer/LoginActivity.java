@@ -40,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText password = findViewById(R.id.password);
 
         if (firebaseAuth.getCurrentUser() != null) {
-            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+            startActivity(new Intent(getApplicationContext(), MapActivity.class));
             finish();
         }
 
@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(LoginActivity.this, "Logged in successfully.", Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+                    startActivity(new Intent(getApplicationContext(), MapActivity.class));
                     finish();
                 } else {
                     Toast.makeText(LoginActivity.this, "Error! " + task.getException().getMessage(), Toast.LENGTH_LONG).show();

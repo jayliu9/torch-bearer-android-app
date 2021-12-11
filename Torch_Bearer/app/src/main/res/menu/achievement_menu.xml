@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/achieved"
+        android:icon="@drawable/ic_achievement_achieved"
+        android:title="Achieved" />
+    <item
+        android:id="@+id/achievable"
+        android:icon="@drawable/ic_achievement_available"
+        android:title="Achievable" />
+</menu>

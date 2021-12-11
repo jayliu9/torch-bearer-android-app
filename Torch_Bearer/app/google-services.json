@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "165287983952",
-    "project_id": "torch-bearer-541af",
-    "storage_bucket": "torch-bearer-541af.appspot.com"
+    "project_number": "669052865881",
+    "project_id": "torch-bearer-7528d",
+    "storage_bucket": "torch-bearer-7528d.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:165287983952:android:eaffba9f592374007b8a55",
+        "mobilesdk_app_id": "1:669052865881:android:085f2adfea088d9b1b5048",
         "android_client_info": {
           "package_name": "com.example.torchbearer"
         }
       },
       "oauth_client": [
         {
-          "client_id": "165287983952-kmpg4r1masmt8sc4b4io91i81510rsj7.apps.googleusercontent.com",
+          "client_id": "669052865881-qssvqk7g69qre6rire0r5apvuqtel1jd.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBv1_zUXPp3-vSKzzwV0At3V--csfkakPE"
+          "current_key": "AIzaSyCr8P6PZcAvmoa5KFjerbjj3lW4-4Ki7og"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "165287983952-kmpg4r1masmt8sc4b4io91i81510rsj7.apps.googleusercontent.com",
+              "client_id": "669052865881-qssvqk7g69qre6rire0r5apvuqtel1jd.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
