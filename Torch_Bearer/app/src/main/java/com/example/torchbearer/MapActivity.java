@@ -32,6 +32,7 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.example.torchbearer.achievement.Achievement;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -70,7 +71,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.example.torchbearer.profile.ProfileActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
@@ -131,6 +134,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         marker.remove();
                     }
                     mMapView.resetLine();
+                    setAchievement();
                 }
             }
         });
@@ -231,7 +235,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
 
-    private void sendNotification(View view) {
+    private void sendNotification(String achievement) {
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference("Users").child(userId);
         database.addValueEventListener(new ValueEventListener() {
@@ -240,7 +244,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 User user = snapshot.getValue(User.class);
                 String receiverToken = user.getToken();
                 SendNotification notification = new SendNotification();
-                notification.sendMessageToDevice(view, receiverToken, achievement, MapActivity.this);
+                notification.sendMessageToDevice(receiverToken, achievement, MapActivity.this);
             }
 
             @Override
@@ -487,12 +491,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //    }
 
 
-    public void openPostPhotoActivity(View view) {
-        startActivity(new Intent(MapActivity.this, PostPhotoActivity.class));
-    }
+//    public void openPostPhotoActivity(View view) {
+//        startActivity(new Intent(MapActivity.this, PostPhotoActivity.class));
+//    }
+//
+//    public void openViewPhotoActivity(View view) {
+//        startActivity(new Intent(MapActivity.this, ViewPhotosAtLocationActivity.class));
+//    }
 
-    public void openViewPhotoActivity(View view) {
-        startActivity(new Intent(MapActivity.this, ViewPhotosAtLocationActivity.class));
+    private void setAchievement() {
+        AchievementMap achievementMap = new AchievementMap();
+        if (user.getPaths().size() == 1) {
+            user.getAchievedMap().put("First Path", new Achievement("First Path", "First time start tracking path."));
+            mDatabase.onUpdateUserAchievement(userId, user.getAchievedMap());
+            if (achievementMap.isAchievementValid("First Path", user.getAchievedMap())) {
+                sendNotification("First Path");
+            }
+        }
+        if (user.getTotalLength() >= 10.0) {
+            user.getAchievedMap().put("10 Feet", new Achievement("10 Feet", "Tracked 10-foot long path."));
+            mDatabase.onUpdateUserAchievement(userId, user.getAchievedMap());
+            if (achievementMap.isAchievementValid("10 Feet", user.getAchievedMap())) {
+                sendNotification("10 Feet");
+            }
+        }
+        if (user.getLogCount() == 1) {
+            user.getAchievedMap().put("First Log", new Achievement("First Log", "Reached the first wood log."));
+            mDatabase.onUpdateUserAchievement(userId, user.getAchievedMap());
+            if (achievementMap.isAchievementValid("First Log", user.getAchievedMap())) {
+                sendNotification("First Log");
+            }
+        }
     }
 
 }

@@ -13,18 +13,18 @@ public class SendNotification {
     private static final String SERVER_KEY = "key=AAAAm8aojVk:APA91bHprXNlrQ3ezv1nO21yuoHUiDsN7Rdi_hXaI0JJJw7JA5RENAsljULWePCJAxbEoPt1VoqUAeappkQmaeJJ7pTYWm7FEbObulvoxAc1pl_Niy8wlvSCSRZ58GM0FMm-tv6BvLhv";
 
 
-    public void sendMessageToDevice(View view, String targetToken, String achievement, Activity activity) {
+    public void sendMessageToDevice(String targetToken, String achievement, Activity activity) {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                sendMessageToDevice(targetToken, achievement, activity);
+                sendMessageToDeviceHelper(targetToken, achievement, activity);
             }
         }).start();
     }
 
 
-    private void sendMessageToDevice(String targetToken, String achievement, Activity activity) {
+    private void sendMessageToDeviceHelper(String targetToken, String achievement, Activity activity) {
 
         // Prepare data
         JSONObject jPayload = new JSONObject();

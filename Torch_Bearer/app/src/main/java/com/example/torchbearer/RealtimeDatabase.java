@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.example.torchbearer.achievement.Achievement;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -29,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class RealtimeDatabase {
     public static final String USERS_TABLE_NAME = "Users";
@@ -197,6 +199,28 @@ public class RealtimeDatabase {
 
             }
         });
+    }
+
+    public void onUpdateUserAchievement(String userId, Map<String, Achievement> achievement) {
+        getChildReference(userId)
+                .runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                        User user = currentData.getValue(User.class);
+                        if (user == null) {
+                            return Transaction.success(currentData);
+                        }
+                        user.setAchievedMap(achievement);
+                        currentData.setValue(user);
+                        return Transaction.success(currentData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                        Log.d(TAG, "postTransactionForSender:onComplete:" + error);
+                    }
+                });
     }
 
     private BitmapDescriptor BitMapFromVector(Context applicationContext, int ic_torch) {

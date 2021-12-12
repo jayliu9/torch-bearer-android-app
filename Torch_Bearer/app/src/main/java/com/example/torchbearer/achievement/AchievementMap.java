@@ -43,13 +43,15 @@ public class AchievementMap {
         }
     }
 
-    public void isAchievementValid(String title, Map<String, Achievement> achievedMap) {
-        if (this.map.containsKey(title)) {
+    public boolean isAchievementValid(String title, Map<String, Achievement> achievedMap) {
+        if (!achievedMap.containsKey(title)) {
             Achievement achievement = this.map.get(title);
             achievement.setDate(Calendar.getInstance().getTime().toString());
             this.map.remove(achievement.getTitle());
             achievedMap.put(achievement.getTitle(), achievement);
+            return true;
         }
+        return false;
     }
     public Map<String, Achievement> getMap() {
         return map;
