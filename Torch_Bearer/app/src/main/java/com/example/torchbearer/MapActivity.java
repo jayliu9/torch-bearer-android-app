@@ -112,6 +112,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     List<List<LatLng>> transparentLines;
 
     private int numPaths;
+    private Map<String, Achievement> userAchievements;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +148,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         initializeDb();
         initializeCurrentUser(userId);
         reference = mDatabase.getChildReference(userId);
-
+        getUserAchievements();
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mMapView = (PathMapView) findViewById(R.id.pathView);
         mMapView.onCreate(mapViewBundle);
@@ -382,6 +383,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }
 
+    private void getUserAchievements() {
+        reference.child("achievedMap").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(!snapshot.exists())
+                    userAchievements = new HashMap<>();
+                else
+                    userAchievements = snapshot.getValue(Map.class);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
     @Override
     public void onLocationChanged(@NonNull Location location) {
         if (location != null) {
@@ -502,22 +518,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void setAchievement() {
         AchievementMap achievementMap = new AchievementMap();
         if (user.getPaths().size() == 1) {
-            user.getAchievedMap().put("First Path", new Achievement("First Path", "First time start tracking path."));
-            mDatabase.onUpdateUserAchievement(userId, user.getAchievedMap());
+            userAchievements.put("First Path", new Achievement("First Path", "First time start tracking path."));
+            reference.child("achievedMap").setValue(userAchievements);
             if (achievementMap.isAchievementValid("First Path", user.getAchievedMap())) {
                 sendNotification("First Path");
             }
         }
         if (user.getTotalLength() >= 10.0) {
-            user.getAchievedMap().put("10 Feet", new Achievement("10 Feet", "Tracked 10-foot long path."));
-            mDatabase.onUpdateUserAchievement(userId, user.getAchievedMap());
+            userAchievements.put("10 Feet", new Achievement("10 Feet", "Tracked 10-foot long path."));
+            reference.child("achievedMap").setValue(userAchievements);
             if (achievementMap.isAchievementValid("10 Feet", user.getAchievedMap())) {
                 sendNotification("10 Feet");
             }
         }
         if (user.getLogCount() == 1) {
-            user.getAchievedMap().put("First Log", new Achievement("First Log", "Reached the first wood log."));
-            mDatabase.onUpdateUserAchievement(userId, user.getAchievedMap());
+            userAchievements.put("First Log", new Achievement("First Log", "Reached the first wood log."));
+            reference.child("achievedMap").setValue(userAchievements);
             if (achievementMap.isAchievementValid("First Log", user.getAchievedMap())) {
                 sendNotification("First Log");
             }
