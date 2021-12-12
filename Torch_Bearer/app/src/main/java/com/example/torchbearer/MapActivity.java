@@ -387,7 +387,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         reference.child("achievedMap").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(!snapshot.exists())
+                if(snapshot == null)
                     userAchievements = new HashMap<>();
                 else
                     userAchievements = snapshot.getValue(Map.class);

@@ -229,6 +229,10 @@ public class PostPhotoActivity extends AppCompatActivity {
     }
 
     public void backToMainActivity(View view) {
-        startActivity(new Intent(PostPhotoActivity.this, ViewPhotosAtLocationActivity.class));
+//        startActivity(new Intent(PostPhotoActivity.this, ViewPhotosAtLocationActivity.class));
+
+        Intent i = new Intent(PostPhotoActivity.this, ViewPhotosAtLocationActivity.class);
+        i.putExtra("location", currentLocation);
+        startActivity(i);
     }
 }
