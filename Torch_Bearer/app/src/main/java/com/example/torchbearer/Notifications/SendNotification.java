@@ -10,21 +10,21 @@ import org.json.JSONObject;
 public class SendNotification {
 
 
-    private static final String SERVER_KEY = "key=AAAAJnvue1A:APA91bEH6vHhgv7BhRwiNThoBlRDyqeHOYyFWbv3Ef8oGYqEFUyAHgd7D2K2KmysT8Vql1kbiJRZiFUAmsMGGuT7p9of7LdmmDRdzS0fJLBFkITD6aVzihSUrCeRfyUlGmiR2elZtoEh";
+    private static final String SERVER_KEY = "key=AAAAm8aojVk:APA91bHprXNlrQ3ezv1nO21yuoHUiDsN7Rdi_hXaI0JJJw7JA5RENAsljULWePCJAxbEoPt1VoqUAeappkQmaeJJ7pTYWm7FEbObulvoxAc1pl_Niy8wlvSCSRZ58GM0FMm-tv6BvLhv";
 
 
-    public void sendMessageToDevice(View view, String targetToken, String achievement, Activity activity) {
+    public void sendMessageToDevice(String targetToken, String achievement, Activity activity) {
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                sendMessageToDevice(targetToken, achievement, activity);
+                sendMessageToDeviceHelper(targetToken, achievement, activity);
             }
         }).start();
     }
 
 
-    private void sendMessageToDevice(String targetToken, String achievement, Activity activity) {
+    private void sendMessageToDeviceHelper(String targetToken, String achievement, Activity activity) {
 
         // Prepare data
         JSONObject jPayload = new JSONObject();
@@ -32,13 +32,12 @@ public class SendNotification {
         JSONObject jdata = new JSONObject();
         try {
             jNotification.put("title", "New Achievement!");
-            jNotification.put("body", "Congratulations！You have achieved a new achievement!");
+            jNotification.put("body", "Congratulations！You have achieved a new achievement! " + achievement);
             jNotification.put("sound", "default");
             jNotification.put("badge", "1");
 
             jdata.put("title", "data title from 'SEND STICKER BUTTON'");
             jdata.put("content", "data content from 'SEND STICKER BUTTON'");
-            jdata.put("achievement", achievement);
 
             /***
              * The Notification object is now populated.

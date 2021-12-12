@@ -1,6 +1,8 @@
 package com.example.torchbearer;
 
 
+import com.example.torchbearer.achievement.Achievement;
+import com.example.torchbearer.achievement.AchievementMap;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -25,12 +27,14 @@ public class User implements Serializable {
     private List<MarkerOptions> markerOptions;
     private List<LatLngForUser> clicked;
     private String ProfileImageUrl;
+    private Map<String, Achievement> achievedMap;
 
     public User() {
         this.paths = new ArrayList<>();
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
         this.clicked = new ArrayList<>();
+        this.achievedMap = new HashMap<>();
     }
 
     public User(String username) {
@@ -39,6 +43,7 @@ public class User implements Serializable {
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
         this.clicked = new ArrayList<>();
+        this.achievedMap = new HashMap<>();
     }
 
     public User(String username, String email) {
@@ -48,6 +53,7 @@ public class User implements Serializable {
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
         this.clicked = new ArrayList<>();
+        this.achievedMap = new HashMap<>();
     }
 
     public User(String username, String email, String phoneNum) {
@@ -58,6 +64,7 @@ public class User implements Serializable {
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
         this.clicked = new ArrayList<>();
+        this.achievedMap = new HashMap<>();
     }
 
     public User(String username, List<List<LatLngForUser>> paths) {
@@ -66,6 +73,7 @@ public class User implements Serializable {
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
         this.clicked = new ArrayList<>();
+        this.achievedMap = new HashMap<>();
     }
 
     public User(String username, List<List<LatLngForUser>> paths, int numOfPath) {
@@ -74,23 +82,9 @@ public class User implements Serializable {
         this.numOfPath = numOfPath;
         this.markerOptions = new ArrayList<>();
         this.clicked = new ArrayList<>();
+        this.achievedMap = new HashMap<>();
     }
 
-    public User(String username, List<List<LatLngForUser>> paths, MyLocation location, String token, int numOfPath, double totalLength, int logCount, String userId, String email, String phoneNum, List<MarkerOptions> markerOptions, List<LatLngForUser> clicked, String profileImageUrl) {
-        this.username = username;
-        this.paths = paths;
-        this.location = location;
-        this.token = token;
-        this.numOfPath = numOfPath;
-        this.totalLength = totalLength;
-        this.logCount = logCount;
-        this.userId = userId;
-        this.email = email;
-        this.phoneNum = phoneNum;
-        this.markerOptions = markerOptions;
-        this.clicked = clicked;
-        ProfileImageUrl = profileImageUrl;
-    }
 
     @Override
     public String toString() {
@@ -207,5 +201,13 @@ public class User implements Serializable {
 
     public void setClicked(List<LatLngForUser> clicked) {
         this.clicked = clicked;
+    }
+
+    public Map<String, Achievement> getAchievedMap() {
+        return achievedMap;
+    }
+
+    public void setAchievedMap(Map<String, Achievement> achievedMap) {
+        this.achievedMap = achievedMap;
     }
 }

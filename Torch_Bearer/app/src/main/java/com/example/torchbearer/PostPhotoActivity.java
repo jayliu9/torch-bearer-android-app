@@ -1,5 +1,6 @@
 package com.example.torchbearer;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -23,6 +24,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -52,11 +57,15 @@ public class PostPhotoActivity extends AppCompatActivity {
     String currentUser;
 
     StorageReference storageReference;
+    RealtimeDatabase mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_photo);
+
+        currentUser = getIntent().getExtras().getString("user");
+        currentLocation = getIntent().getExtras().getString("location");
 
         imageSelected = findViewById(R.id.imageSelected);
         cameraButton = findViewById(R.id.camera);
@@ -66,9 +75,10 @@ public class PostPhotoActivity extends AppCompatActivity {
         postButton.setEnabled(false);
         postButton.setText("Post");
 
-        // TODO: replace with real location and user
-        currentLocation = LOCATION;
-        currentUser = USER;
+//        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+//        String userId = firebaseAuth.getCurrentUser().getUid();
+//        currentUser = userId;
+//        currentLocation = getIntent().getExtras().getString("location");
 
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -219,6 +229,10 @@ public class PostPhotoActivity extends AppCompatActivity {
     }
 
     public void backToMainActivity(View view) {
-        startActivity(new Intent(PostPhotoActivity.this, MapActivity.class));
+//        startActivity(new Intent(PostPhotoActivity.this, ViewPhotosAtLocationActivity.class));
+
+        Intent i = new Intent(PostPhotoActivity.this, ViewPhotosAtLocationActivity.class);
+        i.putExtra("location", currentLocation);
+        startActivity(i);
     }
 }

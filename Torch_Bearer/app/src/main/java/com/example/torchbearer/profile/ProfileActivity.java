@@ -165,7 +165,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setInitImage() {
-        mDatabase.getChildReference(userId).child("ProfileImageUrl").addValueEventListener(new ValueEventListener() {
+        mDatabase.getChildReference(userId).child("profileImageUrl").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String url = snapshot.getValue(String.class);
@@ -209,7 +209,7 @@ public class ProfileActivity extends AppCompatActivity {
                             imageFileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(@NonNull Uri uri) {
-                                    mDatabase.getChildReference(userId).child("ProfileImageUrl").setValue(uri.toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    mDatabase.getChildReference(userId).child("profileImageUrl").setValue(uri.toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if(task.isSuccessful()) {

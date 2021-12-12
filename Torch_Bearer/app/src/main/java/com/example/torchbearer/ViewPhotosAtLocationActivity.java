@@ -35,6 +35,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 //import com.example.torchbearer.databinding.ActivityViewPhotosAtLocationBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
@@ -59,6 +65,7 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
 
     String currentLocation;
     String currentUser;
+    RealtimeDatabase mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +86,26 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
             recyclerView.addItemDecoration(dividerItemDecoration);
         }
 
-        // TODO: replace with actual location and user
-        currentLocation = LOCATION;
-        currentUser = USER;
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        String userId = firebaseAuth.getCurrentUser().getUid();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(userId);
+
+        ref.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                Log.i(TAG, "User: " + user);
+                if (user != null && user.getUsername() != null) {
+                    Log.i(TAG, "Setting User: " + user);
+                    currentUser = user.getUsername();
+                } else {
+                    currentUser = userId;
+                }
+            }
+        });
+
+        currentLocation = getIntent().getExtras().getString("location");
 
         getSupportActionBar().setTitle("Posts at " + currentLocation);
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -325,5 +349,14 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
         recyclerViewAdapter.notifyDataSetChanged();
         progressBar.setVisibility(View.GONE);
 //        fab.setVisibility(View.VISIBLE);
+    }
+
+    public void openPostPhotoActivity(View view) {
+//        startActivity(new Intent(ViewPhotosAtLocationActivity.this, PostPhotoActivity.class));
+
+        Intent i = new Intent(ViewPhotosAtLocationActivity.this, PostPhotoActivity.class);
+        i.putExtra("location", currentLocation);
+        i.putExtra("user", currentUser);
+        startActivity(i);
     }
 }
