@@ -64,6 +64,9 @@ public class PostPhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_photo);
 
+        currentUser = getIntent().getExtras().getString("user");
+        currentLocation = getIntent().getExtras().getString("location");
+
         imageSelected = findViewById(R.id.imageSelected);
         cameraButton = findViewById(R.id.camera);
         albumButton = findViewById(R.id.album);
@@ -72,10 +75,10 @@ public class PostPhotoActivity extends AppCompatActivity {
         postButton.setEnabled(false);
         postButton.setText("Post");
 
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        String userId = firebaseAuth.getCurrentUser().getUid();
-        currentUser = userId;
-        currentLocation = getIntent().getExtras().getString("location");
+//        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+//        String userId = firebaseAuth.getCurrentUser().getUid();
+//        currentUser = userId;
+//        currentLocation = getIntent().getExtras().getString("location");
 
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -226,6 +229,6 @@ public class PostPhotoActivity extends AppCompatActivity {
     }
 
     public void backToMainActivity(View view) {
-        startActivity(new Intent(PostPhotoActivity.this, MapActivity.class));
+        startActivity(new Intent(PostPhotoActivity.this, ViewPhotosAtLocationActivity.class));
     }
 }
