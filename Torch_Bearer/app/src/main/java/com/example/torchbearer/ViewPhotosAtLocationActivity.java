@@ -35,6 +35,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 //import com.example.torchbearer.databinding.ActivityViewPhotosAtLocationBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
@@ -59,6 +63,7 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
 
     String currentLocation;
     String currentUser;
+    RealtimeDatabase mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +84,12 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
             recyclerView.addItemDecoration(dividerItemDecoration);
         }
 
-        // TODO: replace with actual location and user
-        currentLocation = LOCATION;
-        currentUser = USER;
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        String userId = firebaseAuth.getCurrentUser().getUid();
+        currentUser = userId;
+        currentLocation = getIntent().getExtras().getString("location");
+
+
 
         getSupportActionBar().setTitle("Posts at " + currentLocation);
         storageReference = FirebaseStorage.getInstance().getReference();

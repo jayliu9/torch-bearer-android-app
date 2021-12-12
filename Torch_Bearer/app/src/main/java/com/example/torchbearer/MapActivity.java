@@ -108,6 +108,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     List<List<LatLng>> transparentLines;
 
+    private int numPaths;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +126,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 } else {
                     isOn = false;
                     savePath();
+
                     for (Marker marker : markers) {
                         marker.remove();
                     }
@@ -187,6 +190,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                 clicked.add(marker.getPosition());
                                 saveMarkerState(clicked);
                             }
+                            Intent i = new Intent(MapActivity.this, ViewPhotosAtLocationActivity.class);
+                            i.putExtra("location", marker.getTitle());
+                            startActivity(i);
                         }
                         return false;
                     }
@@ -391,6 +397,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void savePath() {
         reference.child("paths").setValue(mMapView.getmPathPoints());
+        reference.child("numOfPath").setValue(numPaths);
     }
 
     private void saveMarkers(List<Marker> markers) {
