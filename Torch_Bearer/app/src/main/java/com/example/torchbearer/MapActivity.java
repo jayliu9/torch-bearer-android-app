@@ -7,6 +7,13 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import androidx.fragment.app.FragmentActivity;
+
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -17,13 +24,32 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.text.Layout;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import com.example.torchbearer.Notifications.SendNotification;
 import com.example.torchbearer.achievement.AchievementMap;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -79,6 +105,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private PathMapView mMapView;
     private List<LatLng> clicked;
 
+
     List<List<LatLng>> transparentLines;
 
     @Override
@@ -97,7 +124,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 } else {
                     isOn = false;
                     savePath();
-                    saveMarkers(markers);
+                    for (Marker marker : markers) {
+                        marker.remove();
+                    }
                     mMapView.resetLine();
                 }
             }
@@ -109,11 +138,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
         }
         initializeDb();
-//        initializeCurrentUser("User-101");
         initializeCurrentUser(userId);
-//        reference = mDatabase.getChildReference("User-101");
         reference = mDatabase.getChildReference(userId);
-//        username = "User-101";
 
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mMapView = (PathMapView) findViewById(R.id.pathView);
@@ -129,27 +155,44 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 myMaker = map.addMarker(new MarkerOptions().position(seattle).title("Marker")
                         .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_torch)));
                 clicked = new ArrayList<>();
-                initialClickedState();
-                initialMarkers();
-                if (markerOptions.isEmpty()) {
-                    createMarkers();
-                }
+                mDatabase.getChildReference("markers").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        boolean isEmpty = true;
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            if (ds.getValue(Marker.class) != null) {
+                                isEmpty = false;
+                            }
+                        }
+                        if (isEmpty)
+                            createMarkers();
+//                        if (!snapshot.exists()) {
+//                            System.out.println("doing exist");
+//                            createMarkers();
+//                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+                initialMarkersAsy(map);
                 map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
-                        marker.setIcon(BitMapFromVector(getApplicationContext(), R.drawable.ic_campfire));
-                        if (!clicked.contains(marker.getPosition())) {
-                            clicked.add(marker.getPosition());
-                            saveMarkerState(clicked);
-                            System.out.println("clicked add " + marker);
-                            System.out.println(clicked);
+                        if (!marker.equals(myMaker)) {
+                            marker.setIcon(BitMapFromVector(getApplicationContext(), R.drawable.ic_campfire));
+                            if (!clicked.contains(marker.getPosition())) {
+                                clicked.add(marker.getPosition());
+                                saveMarkerState(clicked);
+                            }
                         }
                         return false;
                     }
                 });
                 //initial
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS, 15f));
-//                map.animateCamera(CameraUpdateFactory.newLatLngZoom(V_ICE_SCREAMS,15));
                 initTransparentLine();
             }
         });
@@ -250,6 +293,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void createMarkers() {
+        System.out.println("create markers");
         this.markers = new ArrayList<>();
         LatLng spaceNeedle = new LatLng(47.620506, -122.349277);
         LatLng amazonSpheres = new LatLng(47.615556, -122.339444);
@@ -263,44 +307,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_wood_logs)));
         mark2.setVisible(false);
         markers.add(mark2);
+
+        saveMarkers(markers);
     }
 
     private void initializeDb() {
         mDatabase = new RealtimeDatabase(MapActivity.this);
     }
-
-//    private void initializeCurrentUser(String usernameInput) {
-//        Bundle extras = getIntent().getExtras();
-//        String finalUsername = usernameInput;
-//        mDatabase.getChildReference(usernameInput).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // Get Post object and use the values to update the UI
-//                User userInDB = dataSnapshot.getValue(User.class);
-//                if (userInDB == null) {
-//                    mDatabase.createUser(finalUsername);
-//                    user = new User(finalUsername);
-//                } else {
-//                    user = userInDB;
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                // Getting Post failed, log a message
-//                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-//            }
-//        });
-
-//        if (true) {//extras != null) {
-//            //username = extras.getString("username");
-//            username = user.getUsername();
-//            Log.i(TAG, "Current username is '" + username + "'.");
-//        } else {
-//            Log.e(TAG, "No username passed to activity!!!");
-//        }
-//        mDatabase.createUser(username);
-//    }
 
     private void initializeCurrentUser(String userId) {
 
@@ -329,31 +342,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }
 
-    private void initialClickedState() {
-        System.out.println(clicked + "click empty");
-        mDatabase.onUpdateClickedState(userId, clicked, new ClickedStateCallBack() {
-            @Override
-            public void onCallBack(List<LatLng> clickedCallBack) {
-                clicked = clickedCallBack;
-            }
-        });
-    }
-
-    private void initialMarkers() {
+    private void initialMarkersAsy(GoogleMap map) {
         markerOptions = new ArrayList<>();
-        mDatabase.showMarkers(userId, markerOptions, new MarkerCallBack() {
-            @Override
-            public void onCallBack(List<MarkerOptions> markerOpts) {
-                for (MarkerOptions markerOption : markerOpts) {
-                    if (clicked.contains(markerOption.getPosition())) {
-                        markerOption.icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_campfire));
-                    } else {
-                        markerOption.icon(BitMapFromVector(getApplicationContext(), R.drawable.ic_wood_logs));
-                    }
-                    map.addMarker(markerOption);
-                }
-            }
-        });
+        mDatabase.showMarkersAsy(userId, map);
+        System.out.println("initial markers Asy" + markers);
     }
 
 
@@ -387,6 +379,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             if (isOn) {
                 updateTrack(location);
                 checkMarkersDistance(50);
+                System.out.println("location change");
+
             }
             map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
         } else {
@@ -446,6 +440,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
 
@@ -465,10 +460,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             LatLng markerLatLng = marker.getPosition();
             float result[] = new float[1];
             Location.distanceBetween(myMaker.getPosition().latitude, myMaker.getPosition().longitude, markerLatLng.latitude, markerLatLng.longitude, result);
-            if (result[0] < radius)
+            if (result[0] < radius) {
                 marker.setVisible(true);
-        };
+                saveMarkers(markers);
+            }
+        }
     }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
 
     //    private void displayPastMarker(List<Marker> markers) {
 //        for (Marker marker : markers) {
@@ -477,8 +480,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //    }
 
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
+    public void openPostPhotoActivity(View view) {
+        startActivity(new Intent(MapActivity.this, PostPhotoActivity.class));
     }
+
+    public void openViewPhotoActivity(View view) {
+        startActivity(new Intent(MapActivity.this, ViewPhotosAtLocationActivity.class));
+    }
+
 }

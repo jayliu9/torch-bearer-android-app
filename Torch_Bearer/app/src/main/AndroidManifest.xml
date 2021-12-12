@@ -2,9 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.torchbearer">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -26,22 +29,21 @@
             android:name=".profile.ProfileActivity"
             android:exported="false" />
         <activity
+
+            android:name=".ViewPhotosAtLocationActivity"
+            android:exported="false"
+            android:label="View at SF"
+            android:theme="@style/Theme.TorchBearer.NoActionBar" />
+        <activity
+            android:name=".PostPhotoActivity"
+            android:exported="false" />
+        <activity
             android:name=".MapActivity"
             android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_key" />
-
-        <activity
-            android:name=".profile.EditProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".achievement.AchievementActivity"
-            android:exported="false" />
-        <activity
-            android:name=".profile.ProfileActivity"
-            android:exported="false" />
 
         <activity
             android:name=".RegisterActivity"
@@ -60,6 +62,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.torchbearer.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
 
         <service

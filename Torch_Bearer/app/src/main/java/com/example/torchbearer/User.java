@@ -50,7 +50,7 @@ public class User implements Serializable {
         this.clicked = new ArrayList<>();
     }
 
-    public User(String username, String phoneNum, String email) {
+    public User(String username, String email, String phoneNum) {
         this.username = username;
         this.email = email;
         this.phoneNum = phoneNum;
