@@ -3,7 +3,9 @@ package com.example.torchbearer;
 import static com.example.torchbearer.PhotoContent.deleteSavedImages;
 import static com.example.torchbearer.PhotoContent.downloadImage;
 import static com.example.torchbearer.PhotoContent.loadSavedImages;
+import static com.example.torchbearer.PostPhotoActivity.LOCATION;
 import static com.example.torchbearer.PostPhotoActivity.TAG;
+import static com.example.torchbearer.PostPhotoActivity.USER;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
@@ -78,8 +80,8 @@ public class ViewPhotosAtLocationActivity extends AppCompatActivity implements P
         }
 
         // TODO: replace with actual location and user
-        currentLocation = "san diego";
-        currentUser = "John Smith";
+        currentLocation = LOCATION;
+        currentUser = USER;
 
         getSupportActionBar().setTitle("Posts at " + currentLocation);
         storageReference = FirebaseStorage.getInstance().getReference();

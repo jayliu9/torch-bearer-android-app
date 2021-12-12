@@ -36,6 +36,8 @@ public class PostPhotoActivity extends AppCompatActivity {
 
     public static final int CAMERA_PERMISSION_REQUEST_CODE = 321;
     public static final int CAMERA_REQUEST_CODE = 456;
+    public static final String LOCATION = "Space Needles";
+    public static final String USER = "John Smith";
 
     public static final String TAG = "POST_PHOTO";
     public static final int GALLERY_REQUEST_CODE = 789;
@@ -65,8 +67,8 @@ public class PostPhotoActivity extends AppCompatActivity {
         postButton.setText("Post");
 
         // TODO: replace with real location and user
-        currentLocation = "san diego";
-        currentUser = "John Smith";
+        currentLocation = LOCATION;
+        currentUser = USER;
 
         storageReference = FirebaseStorage.getInstance().getReference();
 
