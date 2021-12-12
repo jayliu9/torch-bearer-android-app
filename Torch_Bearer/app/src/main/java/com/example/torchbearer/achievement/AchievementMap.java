@@ -32,11 +32,11 @@ public class AchievementMap {
         for (String key : achievedMap.keySet()) {
             this.map.remove(key);
         }
-        if (user.getNumOfPath() == 1) {
+        if (user.getPaths().size() == 1) {
             isAchievementValid("First Path", achievedMap);
         }
-        if (user.getTotalLength() >= 10.0) {
-            isAchievementValid("10 Feet", achievedMap);
+        if (user.getTotalLength() >= 100.0) {
+            isAchievementValid("100 Feet", achievedMap);
         }
         if (user.getLogCount() == 1) {
             isAchievementValid("First Log", achievedMap);
@@ -45,7 +45,7 @@ public class AchievementMap {
 
     public void isAchievementValid(String title, Map<String, Achievement> achievedMap) {
         if (this.map.containsKey(title)) {
-            Achievement achievement = this.map.get("10 Feet");
+            Achievement achievement = this.map.get(title);
             achievement.setDate(Calendar.getInstance().getTime().toString());
             this.map.remove(achievement.getTitle());
             achievedMap.put(achievement.getTitle(), achievement);

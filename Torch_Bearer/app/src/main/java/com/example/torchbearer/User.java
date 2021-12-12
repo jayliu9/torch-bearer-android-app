@@ -1,6 +1,8 @@
 package com.example.torchbearer;
 
 
+import com.example.torchbearer.achievement.Achievement;
+import com.example.torchbearer.achievement.AchievementMap;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -25,12 +27,14 @@ public class User implements Serializable {
     private List<MarkerOptions> markerOptions;
     private List<LatLngForUser> clicked;
     private String ProfileImageUrl;
+    private Map<String, Achievement> achievedMap;
 
     public User() {
         this.paths = new ArrayList<>();
         this.numOfPath = 0;
         this.markerOptions = new ArrayList<>();
         this.clicked = new ArrayList<>();
+        this.achievedMap = new HashMap<>();
     }
 
     public User(String username) {
