@@ -95,7 +95,8 @@ public class PhotoContent {
         newItem.uri = Uri.fromFile(file);
         Log.i("POST_PHOTO", "Download complete: " + file.getName());
 //        newItem.date = getDateFromUri(newItem.uri);
-        String[] parts = file.getName().substring(0, file.getName().length() - 4).split("_");
+        int suffixIndex = file.getName().indexOf('.');
+        String[] parts = file.getName().substring(0, suffixIndex).split("_");
 
         newItem.date = "Posted by " + parts[0] + "\n" + parts[1];
 
