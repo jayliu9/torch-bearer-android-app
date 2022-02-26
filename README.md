@@ -1,1 +1,0 @@
-# torch-bearer-android-app
