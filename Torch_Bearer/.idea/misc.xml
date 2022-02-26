@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+<<<<<<< HEAD
+=======
+        <entry key="../../../../../layout/custom_preview.xml" value="0.4064814814814815" />
+>>>>>>> 9734bbeec4a52645a21d260cbebed2ebe23017a5
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/btn_state.xml" value="0.5388888888888889" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/circle_profile_button.xml" value="0.38055555555555554" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/curstom_edit_button_text.xml" value="0.4140625" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/custom_cardview.xml" value="0.5388888888888889" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/custom_edit_button.xml" value="0.42824074074074076" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/custom_logout_button.xml" value="0.42824074074074076" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/custom_toggle_button.xml" value="0.34270833333333334" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/edit_profile_button.xml" value="0.5388888888888889" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_achieved.xml" value="0.2972222222222222" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_achievement_achieved.xml" value="0.39351851851851855" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_achievement_available.xml" value="0.39351851851851855" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_achievement_badge.xml" value="0.5388888888888889" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_achievement_badge_24.xml" value="0.5388888888888889" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_achievement_badge_colored.xml" value="0.21388888888888888" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_edit.xml" value="0.21388888888888888" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_gallery.xml" value="0.5388888888888889" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_gallery_24.xml" value="0.5388888888888889" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_not_achieved.xml" value="0.2972222222222222" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_round_person_outline_24.xml" value="0.4140625" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_round_person_outline_48.xml" value="0.34270833333333334" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/drawable/ic_torch.xml" value="0.24375" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/achievable_item.xml" value="0.16875" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/achieved_item.xml" value="0.33" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/achivement_fragment.xml" value="0.3859375" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_achievement.xml" value="0.3161231884057971" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_anthentication.xml" value="0.3917572463768116" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_dashboard.xml" value="0.3917572463768116" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_edit_profile.xml" value="0.44375" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_login.xml" value="0.33" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_main.xml" value="0.3216842105263158" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_map.xml" value="0.2558876811594203" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_profile.xml" value="0.5" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/activity_register.xml" value="0.19351570415400202" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/fragment_achievable.xml" value="0.3859375" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/fragment_achieved.xml" value="0.4583333333333333" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/layout/progress.xml" value="0.1875" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/menu/achievement_menu.xml" value="0.38385416666666666" />
+        <entry key="..\:/NEU/CS5520/torch-bearer-project/Torch_Bearer/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.4744791666666667" />
+<<<<<<< HEAD
+=======
+        <entry key="app/src/main/res/drawable/gradient.xml" value="0.18981481481481483" />
+        <entry key="app/src/main/res/layout/activity_anthentication.xml" value="0.33229166666666665" />
+        <entry key="app/src/main/res/layout/activity_edit_profile.xml" value="0.44006725359178056" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.3328125" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.33229166666666665" />
+        <entry key="app/src/main/res/layout/activity_map.xml" value="0.33229166666666665" />
+        <entry key="app/src/main/res/layout/activity_profile.xml" value="0.33229166666666665" />
+        <entry key="app/src/main/res/layout/activity_register.xml" value="0.3328125" />
+>>>>>>> 9734bbeec4a52645a21d260cbebed2ebe23017a5
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
